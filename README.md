@@ -69,3 +69,33 @@ npm run build      # production build
 npm run start      # serve production build
 npm run typecheck  # tsc --noEmit
 ```
+
+## Deploy ke Vercel
+
+1. Push repo ke GitHub (sudah: https://github.com/Fahri-Hilm/GIU-PORTAL)
+2. Buka https://vercel.com → "Add New Project" → import repo `Fahri-Hilm/GIU-PORTAL`
+3. Di step "Configure Project", expand "Environment Variables" dan tambahkan:
+   - `NEXT_PUBLIC_SUPABASE_URL` = `https://bocdqermbrzmrahvexpf.supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = anon key project Supabase
+   - `NEXT_PUBLIC_APP_URL` = `https://<nama-project-vercel>.vercel.app` (update setelah deploy pertama, atau pakai domain custom)
+   - `SUPABASE_SERVICE_ROLE_KEY` = service role key (opsional, hanya untuk server-side upload logo via service role; tanpa ini upload tetap jalan via anon + RLS)
+4. Klik "Deploy" — Vercel auto-detects Next.js, jalankan `npm install` + `npm run build`, deploy ke `.next`
+5. Setelah deploy, buka URL Vercel. Kalau redirect loop ke `/login`, pastikan env vars ter-set dengan benar di Vercel dashboard (Settings → Environment Variables).
+
+Catatan:
+- Framework preset: **Next.js** (auto-detected)
+- Build command: `next build` (default)
+- Output dir: `.next` (default)
+- Node version: 20 (Vercel default, kompatibel Next.js 15)
+- Tidak perlu `vercel.json` — config sudah via `next.config.ts`
+
+## Supabase Project
+
+- Project ref: `bocdqermbrzmrahvexpf`
+- URL: https://bocdqermbrzmrahvexpf.supabase.co
+- Dashboard: https://supabase.com/dashboard/project/bocdqermbrzmrahvexpf
+- Schema + RLS + storage bucket sudah ter-apply (migration `0001_init.sql` + `0002_marker_icon_url.sql`)
+- Seed data: 10 organisasi, 16 penanda, 6 wilayah, 5 investigasi, 4 operasi, 3 misi, 8 aktivitas
+- Trigger `on_auth_user_created` auto-create profile saat signup
+- Auth: email/password (Supabase Auth)
+- Storage: bucket `organizations` (public-read, authed-write) untuk logo organisasi + ikon penanda
