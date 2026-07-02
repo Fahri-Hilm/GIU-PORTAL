@@ -72,6 +72,7 @@ export const NAV_ITEMS = [
   { href: '/map', label: 'Peta Intelijen', icon: 'Map' },
   { href: '/markers', label: 'Penanda', icon: 'MapPin' },
   { href: '/organizations', label: 'Organisasi', icon: 'Users' },
+  { href: '/members', label: 'Anggota', icon: 'Shield' },
   { href: '/investigations', label: 'Investigasi', icon: 'Search' },
   { href: '/operations', label: 'Operasi', icon: 'Medal' },
   { href: '/activity', label: 'Umpan Aktivitas', icon: 'Radio' },

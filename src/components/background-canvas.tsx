@@ -38,14 +38,11 @@ export function BackgroundCanvas() {
           vec2 p = uv * 2.0 - 1.0;
           p.x *= u_resolution.x / u_resolution.y;
           vec3 color = vec3(0.043, 0.051, 0.063);
-          float scanPos = fract(u_time * 0.15);
-          float scanLine = smoothstep(0.02, 0.0, abs(uv.y - scanPos));
-          color += vec3(0.788, 0.659, 0.416) * scanLine * 0.15;
-          float grain = hash(uv + u_time * 0.01) * 0.03;
+          float grain = hash(uv + u_time * 0.01) * 0.025;
           color += grain;
           float dist = length(p);
-          float pulse = sin(u_time * 0.5 - dist * 4.0) * 0.5 + 0.5;
-          color += vec3(0.788, 0.659, 0.416) * pulse * 0.02 * (1.0 - smoothstep(0.5, 1.0, dist));
+          float glow = 1.0 - smoothstep(0.0, 0.9, dist);
+          color += vec3(0.788, 0.659, 0.416) * glow * 0.04;
           float vignette = 1.0 - smoothstep(0.4, 1.5, length(uv - 0.5));
           color *= vignette;
           gl_FragColor = vec4(color, 1.0);

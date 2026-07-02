@@ -531,6 +531,58 @@ export const data = {
     const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('giu_session') : null;
     return raw ? (JSON.parse(raw) as Profile) : null;
   },
+
+  async listProfiles(): Promise<Profile[]> {
+    if (isSupabaseConfigured) {
+      const sb = supabaseBrowser();
+      const { data: rows, error } = await sb
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return rows as Profile[];
+    }
+    const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem('giu_session') : null;
+    return raw ? [JSON.parse(raw) as Profile] : [];
+  },
+
+  async createProfile(input: {
+    email: string;
+    password: string;
+    full_name: string;
+    rank: string;
+    role?: Profile['role'];
+  }): Promise<void> {
+    if (isSupabaseConfigured) {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? 'Gagal membuat anggota');
+      }
+      return;
+    }
+    throw new Error('Mode mock tidak mendukung pembuatan anggota baru');
+  },
+
+  async deleteProfile(id: string): Promise<void> {
+    if (isSupabaseConfigured) {
+      const res = await fetch('/api/admin/delete-member', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? 'Gagal menghapus anggota');
+      }
+      return;
+    }
+    throw new Error('Mode mock tidak mendukung penghapusan anggota');
+  },
 };
 
 export async function mockSignIn(email: string, _password: string): Promise<Profile> {

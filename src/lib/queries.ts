@@ -235,3 +235,27 @@ export function useUploadMarkerIcon() {
     },
   });
 }
+
+export const profilesKeys = {
+  list: ['profiles'] as const,
+};
+
+export function useProfiles() {
+  return useQuery({ queryKey: profilesKeys.list, queryFn: () => data.listProfiles() });
+}
+
+export function useCreateProfile() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: Parameters<typeof data.createProfile>[0]) => data.createProfile(input),
+    onSuccess: () => qc.invalidateQueries({ queryKey: profilesKeys.list }),
+  });
+}
+
+export function useDeleteProfile() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => data.deleteProfile(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: profilesKeys.list }),
+  });
+}
