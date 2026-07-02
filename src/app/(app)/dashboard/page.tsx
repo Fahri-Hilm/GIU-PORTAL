@@ -175,7 +175,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter-md">
-        <Card className="lg:col-span-1 opacity-0 animate-fade-slide-up stagger-5 relative overflow-hidden" style={{ animationFillMode: 'forwards' }}>
+        <Card className="lg:col-span-1 opacity-0 animate-fade-slide-up stagger-5 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
           <CornerBrackets size={10} className="opacity-40" />
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -207,7 +207,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2 opacity-0 animate-fade-slide-up stagger-6 relative overflow-hidden" style={{ animationFillMode: 'forwards' }}>
+        <Card className="lg:col-span-2 opacity-0 animate-fade-slide-up stagger-6 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
           <CornerBrackets size={10} className="opacity-40" />
           <CardHeader className="flex-row items-center justify-between">
             <div>
@@ -267,7 +267,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter-md">
-        <Card className="opacity-0 animate-fade-slide-up stagger-7 relative overflow-hidden" style={{ animationFillMode: 'forwards' }}>
+        <Card className="opacity-0 animate-fade-slide-up stagger-7 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
           <CornerBrackets size={10} className="opacity-40" />
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -301,7 +301,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2 opacity-0 animate-fade-slide-up stagger-8 relative overflow-hidden" style={{ animationFillMode: 'forwards' }}>
+        <Card className="lg:col-span-2 opacity-0 animate-fade-slide-up stagger-8 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
           <CornerBrackets size={10} className="opacity-40" />
           <CardHeader className="flex-row items-center justify-between">
             <div>
@@ -391,10 +391,10 @@ function StatTile({
   return (
     <Link
       href={href}
-      className="opacity-0 animate-fade-slide-up group relative block"
+      className="opacity-0 animate-fade-slide-up group relative block h-full"
       style={{ animationDelay: `${0.05 + delay * 0.04}s`, animationFillMode: 'forwards' }}
     >
-      <TacticalFrame className="rounded-xl p-gutter-md bg-surface-graphite/60 backdrop-blur-xl border border-border-steel hover:border-primary/40 transition-smooth overflow-hidden">
+      <TacticalFrame className="rounded-xl p-gutter-md bg-surface-graphite/60 backdrop-blur-xl border border-border-steel hover:border-primary/40 transition-smooth overflow-hidden h-full">
         <div
           className="absolute -top-12 -right-12 w-28 h-28 rounded-full blur-2xl opacity-20 group-hover:opacity-50 transition-opacity"
           style={{ background: accentColor }}
@@ -460,8 +460,8 @@ function QuickAction({
           ? 'var(--color-threat-medium)'
           : 'var(--color-primary)';
   return (
-    <Link href={href} className="group">
-      <TacticalFrame className="rounded-lg p-4 bg-surface-graphite/40 hover:bg-surface-gunmetal/60 border border-border-steel hover:border-primary/40 transition-smooth">
+    <Link href={href} className="group h-full">
+      <TacticalFrame className="rounded-lg p-4 bg-surface-graphite/40 hover:bg-surface-gunmetal/60 border border-border-steel hover:border-primary/40 transition-smooth h-full">
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-md flex items-center justify-center border shrink-0 group-hover:scale-110 transition-transform"

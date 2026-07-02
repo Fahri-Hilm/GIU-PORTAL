@@ -38,7 +38,7 @@ export function Topbar() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 flex items-center gap-4 px-margin-edge h-20 bg-surface-graphite/40 border-b border-border-steel/40 backdrop-blur-3xl',
+        'sticky top-0 z-50 flex items-center gap-3 px-margin-edge h-16 bg-surface-graphite/40 border-b border-border-steel/40 backdrop-blur-3xl',
         'transition-all',
       )}
       style={{ marginLeft: collapse ? 72 : 280 }}
@@ -48,12 +48,12 @@ export function Topbar() {
       </Button>
 
       <div className="flex items-center gap-3 min-w-0">
-        <div className="w-8 h-8 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
-          <Shield className="w-4 h-4 text-primary" />
+        <div className="w-10 h-10 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
+          <Shield className="w-5 h-5 text-primary" />
         </div>
         <div className="min-w-0">
           <h2 className="font-headline-md text-headline-md text-on-surface leading-none truncate">{title}</h2>
-          <p className="font-data-mono text-data-mono text-on-surface-muted mt-1">
+          <p className="font-data-mono text-data-mono text-on-surface-muted mt-0.5 leading-none">
             THREAT LEVEL: <span className="text-threat-critical">ELEVATED</span>
           </p>
         </div>
@@ -62,7 +62,7 @@ export function Topbar() {
       <div className="ml-auto hidden md:flex items-center gap-3">
         <div className="relative">
           <SearchIcon className="w-4 h-4 text-on-surface-muted absolute left-3 top-1/2 -translate-y-1/2" />
-          <Input placeholder="Cari organisasi, kasus, operasi..." className="pl-9 w-72 h-9 text-xs" />
+          <Input placeholder="Cari organisasi, kasus, operasi..." className="pl-9 w-72 h-10 text-xs" />
         </div>
         <div className="font-data-mono text-data-mono text-on-surface-muted tabular-nums hidden lg:block min-w-[160px] text-right">
           {now}
