@@ -16,7 +16,7 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { useProfiles, useCreateProfile, useDeleteProfile } from '@/lib/queries';
 import { useAuthStore } from '@/stores/auth';
 import { Button } from '@/components/ui/button';
@@ -33,6 +33,7 @@ const RANK_OPTIONS = ['Captain', 'Lieutenant', 'Sergeant', 'Officer', 'Analyst',
 export default function MembersPage() {
   const { data: profiles = [], isLoading } = useProfiles();
   const currentUser = useAuthStore((s) => s.user);
+  const reducedMotion = useReducedMotion();
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
@@ -70,17 +71,17 @@ export default function MembersPage() {
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: -30, filter: 'blur(10px)' }}
-        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        initial={reducedMotion ? false : { opacity: 0, y: -30, filter: 'blur(10px)' }}
+        animate={{ opacity: 1, y: 0, filter: reducedMotion ? 'none' : 'blur(0px)' }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="relative mb-10"
       >
         <div className="flex items-start justify-between gap-6 flex-wrap">
           <div className="space-y-2">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={reducedMotion ? false : { opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
+              transition={{ delay: reducedMotion ? 0 : 0.2, duration: 0.5 }}
               className="flex items-center gap-3"
             >
               <div className="relative">
@@ -89,8 +90,8 @@ export default function MembersPage() {
                 </div>
                 <motion.div
                   className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-status-active"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  animate={reducedMotion ? { scale: 1 } : { scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: reducedMotion ? 0 : Infinity }}
                 />
               </div>
               <div>
@@ -104,9 +105,9 @@ export default function MembersPage() {
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, x: -30 }}
+              initial={reducedMotion ? false : { opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
+              transition={{ delay: reducedMotion ? 0 : 0.3, duration: 0.6 }}
               className="font-heading text-4xl md:text-5xl tracking-[0.15em]"
             >
               <span className="text-primary">SELECT</span>
@@ -114,17 +115,17 @@ export default function MembersPage() {
             </motion.h1>
 
             <motion.div
-              initial={{ width: 0 }}
+              initial={reducedMotion ? false : { width: 0 }}
               animate={{ width: '100%' }}
-              transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ delay: reducedMotion ? 0 : 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="h-[1px] bg-gradient-to-r from-primary/60 via-primary/20 to-transparent max-w-md"
             />
           </div>
 
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={reducedMotion ? false : { opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
+            transition={{ delay: reducedMotion ? 0 : 0.4, duration: 0.5 }}
             className="flex items-center gap-3"
           >
             <div className="relative group">
@@ -153,8 +154,8 @@ export default function MembersPage() {
         <div className="flex items-center justify-center h-[60vh]">
           <motion.div
             className="flex flex-col items-center gap-6"
-            animate={{ opacity: [0.4, 0.8, 0.4] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            animate={reducedMotion ? { opacity: 1 } : { opacity: [0.4, 0.8, 0.4] }}
+            transition={{ duration: 2, repeat: reducedMotion ? 0 : Infinity }}
           >
             <div className="relative">
               <Loader2 className="w-12 h-12 text-primary animate-spin" />
@@ -175,9 +176,9 @@ export default function MembersPage() {
       ) : (
         <div className="relative flex gap-8 h-[calc(100vh-240px)]">
           <motion.div
-            initial={{ opacity: 0, x: -50, filter: 'blur(8px)' }}
-            animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={reducedMotion ? false : { opacity: 0, x: -50, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, x: 0, filter: reducedMotion ? 'none' : 'blur(0px)' }}
+            transition={{ duration: 0.6, delay: reducedMotion ? 0 : 0.2 }}
             className="w-72 lg:w-80 overflow-y-auto pr-3 space-y-3 scrollbar-thin scrollbar-track-surface/50 scrollbar-thumb-surface-elevated/50"
           >
             {filtered.map((profile, i) => (
@@ -193,9 +194,9 @@ export default function MembersPage() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, filter: 'blur(8px)' }}
-            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-            transition={{ duration: 0.7, delay: 0.3 }}
+            initial={reducedMotion ? false : { opacity: 0, scale: 0.9, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, scale: 1, filter: reducedMotion ? 'none' : 'blur(0px)' }}
+            transition={{ duration: 0.7, delay: reducedMotion ? 0 : 0.3 }}
             className="flex-1"
           >
             <FeaturedCharacter profile={selectedProfile} />
@@ -204,9 +205,9 @@ export default function MembersPage() {
       )}
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={reducedMotion ? false : { opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
+        transition={{ delay: reducedMotion ? 0 : 0.8, duration: 0.5 }}
         className="relative mt-8 pt-5 border-t border-on-surface-muted/8"
       >
         <div className="flex items-center justify-between">

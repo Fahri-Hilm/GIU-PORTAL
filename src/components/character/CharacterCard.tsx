@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { Camera, Shield, Crown, User } from 'lucide-react';
 import { CharacterPortrait } from './CharacterPortrait';
 import { StatusDot } from '@/components/tactical';
@@ -32,18 +32,19 @@ export function CharacterCard({ profile, isSelected, onSelect, index, onUploadCl
   const currentUser = useAuthStore((s) => s.user);
   const isAdmin = currentUser?.role === 'admin';
   const RoleIcon = ROLE_ICONS[profile.role];
+  const reducedMotion = useReducedMotion();
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -40, filter: 'blur(8px)' }}
-      animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+      initial={reducedMotion ? false : { opacity: 0, x: -40, filter: 'blur(8px)' }}
+      animate={reducedMotion ? { opacity: 1, x: 0, filter: 'none' } : { opacity: 1, x: 0, filter: 'blur(0px)' }}
       transition={{
-        delay: index * 0.1,
+        delay: reducedMotion ? 0 : index * 0.1,
         duration: 0.6,
         ease: [0.16, 1, 0.3, 1],
       }}
-      whileHover={{ scale: 1.02, x: 6 }}
-      whileTap={{ scale: 0.97 }}
+      whileHover={reducedMotion ? undefined : { scale: 1.02, x: 6 }}
+      whileTap={reducedMotion ? undefined : { scale: 0.97 }}
       onClick={() => onSelect(profile)}
       className={cn(
         'group relative cursor-pointer rounded-lg overflow-hidden transition-all duration-500',
@@ -108,7 +109,7 @@ export function CharacterCard({ profile, isSelected, onSelect, index, onUploadCl
             </p>
             {isSelected && (
               <motion.div
-                initial={{ width: 0 }}
+                initial={reducedMotion ? false : { width: 0 }}
                 animate={{ width: 'auto' }}
                 className="overflow-hidden"
               >
@@ -123,9 +124,9 @@ export function CharacterCard({ profile, isSelected, onSelect, index, onUploadCl
 
           {isSelected && (
             <motion.div
-              initial={{ opacity: 0, y: 8 }}
+              initial={reducedMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.3 }}
+              transition={{ delay: reducedMotion ? 0 : 0.1, duration: 0.3 }}
               className="flex items-center gap-1.5 pt-1"
             >
               <StatusDot color="var(--color-status-active)" pulse />
