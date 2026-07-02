@@ -37,28 +37,58 @@ export function CharacterPortrait({ profile, size = 'md', className, animate = t
     <motion.div
       className={cn('relative overflow-hidden rounded-lg', className)}
       style={{ width: w, height: h }}
-      animate={animate && !reducedMotion ? { y: [0, -3, 0] } : undefined}
-      transition={animate && !reducedMotion ? { duration: 4, repeat: Infinity, ease: 'easeInOut' } : undefined}
+      animate={animate && !reducedMotion ? { y: [0, -4, 0] } : undefined}
+      transition={animate && !reducedMotion ? { duration: 5, repeat: Infinity, ease: 'easeInOut' } : undefined}
     >
       {!loaded && (
-        <div className="absolute inset-0 bg-surface-elevated animate-pulse rounded-lg" />
+        <div className="absolute inset-0 bg-gradient-to-b from-surface-elevated to-surface animate-pulse rounded-lg" />
       )}
+
       <Image
         src={imgSrc}
         alt={profile.codename ?? profile.full_name}
         fill
         sizes={sizes}
         className={cn(
-          'object-cover rounded-lg transition-opacity duration-300',
-          loaded ? 'opacity-100' : 'opacity-0',
+          'object-cover rounded-lg transition-all duration-500',
+          loaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105',
         )}
         style={{
-          boxShadow: '0 0 20px var(--color-primary)',
+          filter: loaded ? 'brightness(1.1) contrast(1.05)' : undefined,
         }}
         onLoad={() => setLoaded(true)}
         onError={handleError}
         priority={size === 'xl'}
       />
+
+      <div
+        className="absolute inset-0 rounded-lg pointer-events-none"
+        style={{
+          boxShadow: `
+            inset 0 0 30px rgba(0,0,0,0.3),
+            0 0 20px -5px var(--color-primary),
+            0 0 40px -10px var(--color-primary)
+          `,
+        }}
+      />
+
+      <div className="absolute inset-0 pointer-events-none opacity-[0.06] bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(255,255,255,0.2)_2px,rgba(255,255,255,0.2)_4px)] rounded-lg" />
+
+      <div className="absolute inset-0 rounded-lg pointer-events-none border border-primary/20" />
+
+      {animate && !reducedMotion && (
+        <motion.div
+          className="absolute inset-0 rounded-lg pointer-events-none"
+          animate={{
+            boxShadow: [
+              'inset 0 0 20px rgba(0,0,0,0.2)',
+              'inset 0 0 30px rgba(0,0,0,0.4)',
+              'inset 0 0 20px rgba(0,0,0,0.2)',
+            ],
+          }}
+          transition={{ duration: 4, repeat: Infinity }}
+        />
+      )}
     </motion.div>
   );
 }
