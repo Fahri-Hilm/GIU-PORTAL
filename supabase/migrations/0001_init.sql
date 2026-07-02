@@ -58,6 +58,7 @@ create table if not exists public.markers (
   y numeric not null,
   threat_level threat_level not null default 'unknown',
   notes text,
+  icon_url text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );

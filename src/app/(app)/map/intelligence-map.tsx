@@ -3,14 +3,14 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Stage, Layer, Image as KonvaImage, Group, Circle, Line, Text, Rect, Path, Star } from 'react-konva';
 import useImage from 'use-image';
-import type Konva from 'konva';
-import {
+import type Konva from 'konva';import {
   Plus,
   Minus,
   LocateFixed,
   X,
   Trash2,
   Pencil,
+  Upload,
   Layers,
   MapPin,
   Hexagon,
@@ -26,7 +26,7 @@ import { Textarea } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ThreatBadge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { useMarkers, useTerritories, useOrganizations, useCreateMarker, useUpdateMarker, useDeleteMarker, useCreateTerritory, useDeleteTerritory } from '@/lib/queries';
+import { useMarkers, useTerritories, useOrganizations, useCreateMarker, useUpdateMarker, useDeleteMarker, useCreateTerritory, useDeleteTerritory, useUploadMarkerIcon } from '@/lib/queries';
 import { useMapStore } from '@/stores/map';
 import { THREAT_META, MAP_DIMENSIONS, type ThreatLevel } from '@/lib/constants';
 import { cn, formatRelativeTime } from '@/lib/utils';
@@ -71,6 +71,7 @@ export function IntelligenceMap() {
   const deleteMarker = useDeleteMarker();
   const createTerritory = useCreateTerritory();
   const deleteTerritory = useDeleteTerritory();
+  const uploadMarkerIcon = useUploadMarkerIcon();
 
   const mapStore = useMapStore();
 
@@ -137,6 +138,7 @@ export function IntelligenceMap() {
           threat_level: 'medium',
           organization_id: mapStore.selectedOrgId,
           notes: '',
+          icon_url: null,
         };
         setEditingMarker(newMarker);
         setSheetOpen(true);
@@ -409,7 +411,11 @@ export function IntelligenceMap() {
                 {m.threat_level === 'critical' && (
                   <Circle radius={22 / scale} stroke={color} strokeWidth={1.5 / scale} opacity={0.5} listening={false} />
                 )}
-                <MarkerShape shape={shape} color={color} scale={1 / scale} size={16} />
+                {m.icon_url ? (
+                  <MarkerIcon url={m.icon_url} color={color} scale={1 / scale} size={16} />
+                ) : (
+                  <MarkerShape shape={shape} color={color} scale={1 / scale} size={16} />
+                )}
                 {showLabels && (
                   <Text
                     text={m.label}
@@ -675,6 +681,58 @@ export function IntelligenceMap() {
                   </div>
                 </div>
                 <div>
+                  <Label>Ikon Penanda</Label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full border-2 border-border-steel overflow-hidden flex items-center justify-center bg-surface-container-lowest shrink-0">
+                      {editingMarker.icon_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={editingMarker.icon_url} alt="icon" className="w-full h-full object-cover" />
+                      ) : (
+                        <MapPin className="w-5 h-5 text-on-surface-muted" />
+                      )}
+                    </div>
+                    <label className="cursor-pointer">
+                      <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border-steel bg-surface-gunmetal/40 text-on-surface-variant hover:text-primary hover:border-primary/50 hover:bg-surface-gunmetal transition-smooth font-label-caps text-[10px]">
+                        <Upload className="w-3.5 h-3.5" />
+                        {editingMarker.icon_url ? 'GANTI IKON' : 'UPLOAD IKON'}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const f = e.target.files?.[0];
+                          if (!f || !editingMarker.id) {
+                            toast.error('Simpan penanda dulu sebelum upload ikon');
+                            return;
+                          }
+                          try {
+                            const url = await uploadMarkerIcon.mutateAsync({ file: f, markerId: editingMarker.id });
+                            setEditingMarker({ ...editingMarker, icon_url: url });
+                            toast.success('Ikon diunggah');
+                          } catch (err) {
+                            toast.error('Gagal upload ikon', { description: err instanceof Error ? err.message : undefined });
+                          }
+                        }}
+                      />
+                    </label>
+                    {editingMarker.icon_url && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="iconSm"
+                        onClick={() => setEditingMarker({ ...editingMarker, icon_url: null })}
+                        title="Hapus ikon"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
+                  </div>
+                  {uploadMarkerIcon.isPending && (
+                    <p className="font-data-mono text-data-mono text-on-surface-muted mt-1">Mengunggah ikon...</p>
+                  )}
+                </div>
+                <div>
                   <Label>Catatan</Label>
                   <Textarea
                     value={editingMarker.notes ?? ''}
@@ -753,4 +811,44 @@ function MarkerShape({
       }
       return <Line points={pts} closed fill={color} stroke="#0b0d10" strokeWidth={2 * scale} shadowColor={color} shadowBlur={12 * scale} shadowOpacity={0.5} />;
   }
+}
+
+function MarkerIcon({
+  url,
+  color,
+  scale,
+  size,
+}: {
+  url: string;
+  color: string;
+  scale: number;
+  size: number;
+}) {
+  const [img] = useImage(url, 'anonymous');
+  const r = size * scale;
+  if (!img) {
+    return <Circle radius={r} fill={color} stroke="#0b0d10" strokeWidth={2 * scale} opacity={0.5} />;
+  }
+  return (
+    <Group>
+      <Circle
+        radius={r * 1.15}
+        fill="#0b0d10"
+        stroke={color}
+        strokeWidth={2 * scale}
+        shadowColor={color}
+        shadowBlur={10 * scale}
+        shadowOpacity={0.6}
+      />
+      <KonvaImage
+        image={img}
+        x={-r}
+        y={-r}
+        width={r * 2}
+        height={r * 2}
+        cornerRadius={r}
+        listening={false}
+      />
+    </Group>
+  );
 }

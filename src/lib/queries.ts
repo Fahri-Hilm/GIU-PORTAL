@@ -224,3 +224,14 @@ export function useUploadLogo() {
     },
   });
 }
+
+export function useUploadMarkerIcon() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ file, markerId }: { file: File; markerId: string }) =>
+      data.uploadMarkerIcon(file, markerId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.markers });
+    },
+  });
+}

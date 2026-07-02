@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
 function updateMockSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthed = request.cookies.get('giu_mock_auth')?.value === '1';
-  const isLoginPage = pathname.startsWith('/login');
+  const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
   const isApi = pathname.startsWith('/api');
   const isPublicAsset =
     pathname.startsWith('/_next') ||
@@ -19,13 +19,13 @@ function updateMockSession(request: NextRequest) {
     pathname.match(/\.(ico|png|jpg|jpeg|webp|svg|css|js|woff|woff2)$/);
 
   if (isPublicAsset || isApi) return;
-  if (!isAuthed && !isLoginPage) {
+  if (!isAuthed && !isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set('next', pathname);
     return Response.redirect(url);
   }
-  if (isAuthed && isLoginPage) {
+  if (isAuthed && isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return Response.redirect(url);

@@ -42,6 +42,7 @@ export interface MapMarker {
   y: number;
   threat_level: ThreatLevel;
   notes: string | null;
+  icon_url: string | null;
   created_at: string;
   updated_at: string;
 }

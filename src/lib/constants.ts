@@ -70,6 +70,7 @@ export const OPERATION_STATUS_META: Record<
 export const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dasbor', icon: 'LayoutDashboard' },
   { href: '/map', label: 'Peta Intelijen', icon: 'Map' },
+  { href: '/markers', label: 'Penanda', icon: 'MapPin' },
   { href: '/organizations', label: 'Organisasi', icon: 'Users' },
   { href: '/investigations', label: 'Investigasi', icon: 'Search' },
   { href: '/operations', label: 'Operasi', icon: 'Medal' },

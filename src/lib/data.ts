@@ -185,8 +185,7 @@ export const data = {
     actor = 'Sistem',
   ): Promise<MapMarker> {
     const now = new Date().toISOString();
-    const marker: MapMarker = { ...input, id: generateId('mk'), created_at: now, updated_at: now };
-    if (isSupabaseConfigured) {
+    const marker: MapMarker = { ...input, id: generateId('mk'), created_at: now, updated_at: now };    if (isSupabaseConfigured) {
       const sb = supabaseBrowser();
       const { data: row, error } = await sb.from('markers').insert(marker).select().single();
       if (error) throw error;
@@ -481,6 +480,24 @@ export const data = {
       const sb = supabaseBrowser();
       const ext = file.name.split('.').pop() ?? 'jpg';
       const path = `logos/${organizationId}.${ext}`;
+      const { error } = await sb.storage.from('organizations').upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: pub } = sb.storage.from('organizations').getPublicUrl(path);
+      return pub.publicUrl;
+    }
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  },
+
+  async uploadMarkerIcon(file: File, markerId: string): Promise<string> {
+    if (isSupabaseConfigured) {
+      const sb = supabaseBrowser();
+      const ext = file.name.split('.').pop() ?? 'png';
+      const path = `markers/${markerId}.${ext}`;
       const { error } = await sb.storage.from('organizations').upload(path, file, { upsert: true });
       if (error) throw error;
       const { data: pub } = sb.storage.from('organizations').getPublicUrl(path);

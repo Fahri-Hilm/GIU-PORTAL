@@ -36,7 +36,8 @@ export default function DashboardPage() {
     const activeInv = investigations.filter((i) => i.status === 'active').length;
     const activeOps = operations.filter((o) => o.status === 'active' || o.status === 'planning').length;
     const incidents = markers.filter((m) => m.type === 'incident').length;
-    return { total: orgs.length, critical, activeInv, activeOps, incidents };
+    const markersWithIcon = markers.filter((m) => m.icon_url).length;
+    return { total: orgs.length, critical, activeInv, activeOps, incidents, markers: markers.length, markersWithIcon };
   }, [orgs, investigations, operations, markers]);
 
   const threatDistribution = useMemo(() => {
@@ -66,6 +67,15 @@ export default function DashboardPage() {
         <StatCard label="Investigasi Aktif" value={stats.activeInv} icon={Search} accent="critical" trend="+1 hari ini" trendUp className="opacity-0 animate-fade-slide-up stagger-2" />
         <StatCard label="Operasi Berlangsung" value={stats.activeOps} icon={Medal} accent="medium" className="opacity-0 animate-fade-slide-up stagger-3" />
         <StatCard label="Insiden Tercatat" value={stats.incidents} icon={AlertTriangle} accent="high" trend="+3 minggu ini" trendUp={false} className="opacity-0 animate-fade-slide-up stagger-4" />
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-gutter-md">
+        <Link href="/markers" className="opacity-0 animate-fade-slide-up stagger-5" style={{ animationFillMode: 'forwards' }}>
+          <StatCard label="Total Penanda" value={stats.markers} icon={MapPin} accent="primary" trend={`${stats.markersWithIcon} pakai ikon`} trendUp className="w-full" />
+        </Link>
+        <Link href="/map" className="opacity-0 animate-fade-slide-up stagger-6" style={{ animationFillMode: 'forwards' }}>
+          <StatCard label="Buka Peta" value="→" icon={MapPin} accent="medium" className="w-full" />
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter-md">

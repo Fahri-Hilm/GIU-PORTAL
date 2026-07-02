@@ -20,6 +20,7 @@ export const markerSchema = z.object({
   y: z.number().min(0).max(1000),
   threat_level: z.enum(THREAT_LEVELS),
   notes: z.string().max(1000).optional().nullable(),
+  icon_url: z.string().optional().nullable(),
 });
 
 export const territorySchema = z.object({
