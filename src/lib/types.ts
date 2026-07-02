@@ -4,6 +4,7 @@ export interface Profile {
   id: string;
   email: string;
   full_name: string;
+  codename: string | null;
   rank: string;
   avatar_url: string | null;
   role: 'analyst' | 'commander' | 'admin';

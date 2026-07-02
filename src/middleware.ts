@@ -33,5 +33,7 @@ function updateMockSession(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|api/|logo-giu\\.jpg|map\\.webp|.*\\.(?:ico|png|jpg|jpeg|webp|svg|css|js|woff|woff2|ttf|otf)$).*)',
+  ],
 };

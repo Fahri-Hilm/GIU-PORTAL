@@ -16,6 +16,7 @@ import {
   EyeOff,
   Lock,
   Clock,
+  Tag,
 } from 'lucide-react';
 import { useProfiles, useCreateProfile, useDeleteProfile } from '@/lib/queries';
 import { useAuthStore } from '@/stores/auth';
@@ -50,7 +51,8 @@ export default function MembersPage() {
     (p) =>
       p.full_name.toLowerCase().includes(search.toLowerCase()) ||
       p.email.toLowerCase().includes(search.toLowerCase()) ||
-      p.rank.toLowerCase().includes(search.toLowerCase()),
+      p.rank.toLowerCase().includes(search.toLowerCase()) ||
+      (p.codename ?? '').toLowerCase().includes(search.toLowerCase()),
   );
 
   const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'commander';
@@ -145,6 +147,12 @@ export default function MembersPage() {
                         {isSelf && <Badge variant="outline" className="text-[9px] px-1.5 py-0">ANDA</Badge>}
                       </CardTitle>
                       <p className="font-data-mono text-data-mono text-on-surface-muted truncate mt-0.5">{p.email}</p>
+                      {p.codename && (
+                        <span className="inline-flex items-center gap-1 mt-1.5 font-data-mono text-[10px] text-primary tracking-wider">
+                          <Tag className="w-2.5 h-2.5" />
+                          {p.codename.toUpperCase()}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </CardHeader>
@@ -205,6 +213,7 @@ function CreateMemberDialog({
   const create = useCreateProfile();
   const [form, setForm] = useState({
     full_name: '',
+    codename: '',
     email: '',
     password: '',
     rank: 'Analyst',
@@ -219,10 +228,13 @@ function CreateMemberDialog({
       return;
     }
     try {
-      await create.mutateAsync(form);
+      await create.mutateAsync({
+        ...form,
+        codename: form.codename.trim() || null,
+      });
       toast.success('Anggota dibuat', { description: `${form.full_name} dapat login setelah verifikasi email.` });
       onOpenChange(false);
-      setForm({ full_name: '', email: '', password: '', rank: 'Analyst', role: 'analyst' });
+      setForm({ full_name: '', codename: '', email: '', password: '', rank: 'Analyst', role: 'analyst' });
     } catch (err) {
       toast.error('Gagal membuat anggota', { description: err instanceof Error ? err.message : undefined });
     }
@@ -250,6 +262,21 @@ function CreateMemberDialog({
                 required
               />
             </div>
+          </div>
+          <div>
+            <Label>Nama Sandi (Codename)</Label>
+            <div className="relative">
+              <Tag className="w-4 h-4 text-on-surface-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <Input
+                value={form.codename}
+                onChange={(e) => setForm({ ...form, codename: e.target.value })}
+                placeholder="Mis. RAVEN-01"
+                className="pl-9 font-data-mono uppercase tracking-wider"
+              />
+            </div>
+            <p className="font-data-mono text-[10px] text-on-surface-muted mt-1">
+              Kode operasi rahasia. Tampil di profil anggota.
+            </p>
           </div>
           <div>
             <Label>Email</Label>

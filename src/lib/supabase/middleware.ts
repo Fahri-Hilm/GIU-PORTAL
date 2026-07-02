@@ -28,6 +28,12 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
+  const isPublicAsset =
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.match(/\.(ico|png|jpg|jpeg|webp|svg|css|js|woff|woff2|ttf|otf)$/);
+
+  if (isPublicAsset) return supabaseResponse;
 
   if (!user && !isAuthPage) {
     const url = request.nextUrl.clone();

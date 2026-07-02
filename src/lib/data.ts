@@ -518,10 +518,17 @@ export const data = {
         data: { user },
       } = await sb.auth.getUser();
       if (!user) return null;
+      const { data: profile } = await sb
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      if (profile) return profile as Profile;
       return {
         id: user.id,
         email: user.email ?? '',
         full_name: (user.user_metadata['full_name'] as string) ?? user.email ?? 'Operator',
+        codename: (user.user_metadata['codename'] as string | null) ?? null,
         rank: (user.user_metadata['rank'] as string) ?? 'Analyst',
         avatar_url: (user.user_metadata['avatar_url'] as string) ?? null,
         role: (user.user_metadata['role'] as Profile['role']) ?? 'analyst',
@@ -550,6 +557,7 @@ export const data = {
     email: string;
     password: string;
     full_name: string;
+    codename?: string | null;
     rank: string;
     role?: Profile['role'];
   }): Promise<void> {
