@@ -1,0 +1,64 @@
+# GIU Intelligence Portal PRD
+
+## Executive Summary
+
+GIU Intelligence Portal is a premium intelligence dashboard for
+monitoring criminal organizations across San Andreas using an
+interactive map-centric workflow.
+
+## Scope
+
+Frontend design, CRM workflows, map interaction, organization profiles,
+investigations and operations management.
+
+## Technology Stack
+
+### Frontend
+
+-   Next.js 15
+-   TypeScript
+-   Tailwind CSS v4
+-   shadcn/ui
+-   Framer Motion
+-   React Konva
+-   Zustand
+-   TanStack Query
+
+### Backend
+
+-   Next.js Route Handlers
+-   Supabase SDK
+-   Zod Validation
+
+### Infrastructure
+
+-   Vercel
+-   Supabase PostgreSQL
+-   Supabase Storage
+
+## Core Modules
+
+-   Login
+-   Dashboard
+-   Intelligence Map
+-   Organizations CRM
+-   Investigations
+-   Operations
+-   Activity Feed
+-   Settings
+
+## Intelligence Map Features
+
+-   Zoom and pan
+-   Drag and drop markers
+-   CRUD marker management
+-   Territory visualization
+-   Click-to-open organization profile
+
+## CRM Features
+
+-   Upload organization logo
+-   Edit organization information
+-   Update threat levels
+-   Create missions
+-   Manage territory locations
