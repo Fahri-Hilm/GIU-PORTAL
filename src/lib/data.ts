@@ -529,6 +529,7 @@ export const data = {
         email: user.email ?? '',
         full_name: (user.user_metadata['full_name'] as string) ?? user.email ?? 'Operator',
         codename: (user.user_metadata['codename'] as string | null) ?? null,
+        portrait_url: null,
         rank: (user.user_metadata['rank'] as string) ?? 'Analyst',
         avatar_url: (user.user_metadata['avatar_url'] as string) ?? null,
         role: (user.user_metadata['role'] as Profile['role']) ?? 'analyst',

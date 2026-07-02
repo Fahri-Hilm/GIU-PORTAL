@@ -697,6 +697,7 @@ export const seedUser = {
   email: 'analyst@giu.sa',
   full_name: 'Capt. R. Hermawan',
   codename: 'RAVEN-01',
+  portrait_url: null,
   rank: 'Captain',
   avatar_url: null,
   role: 'commander' as const,

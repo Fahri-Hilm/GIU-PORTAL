@@ -5,6 +5,7 @@ export interface Profile {
   email: string;
   full_name: string;
   codename: string | null;
+  portrait_url: string | null;
   rank: string;
   avatar_url: string | null;
   role: 'analyst' | 'commander' | 'admin';
