@@ -12,6 +12,9 @@ import {
   Crown,
   Eye,
   EyeOff,
+  Activity,
+  Users,
+  Zap,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useProfiles, useCreateProfile, useDeleteProfile } from '@/lib/queries';
@@ -52,56 +55,115 @@ export default function MembersPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-[1600px] mx-auto h-full">
+    <div className="relative min-h-screen p-6 md:p-8 max-w-[1600px] mx-auto">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.02]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(color-mix(in srgb, var(--color-primary) 5%, transparent) 1px, transparent 1px),
+              linear-gradient(90deg, color-mix(in srgb, var(--color-primary) 5%, transparent) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px',
+          }}
+        />
+      </div>
+
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8"
+        initial={{ opacity: 0, y: -30, filter: 'blur(10px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="relative mb-10"
       >
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div className="space-y-1">
-            <p className="font-data-mono text-[10px] text-on-surface-muted/60 tracking-[0.2em]">GIU INTELLIGENCE DIVISION</p>
-            <h1 className="font-heading text-3xl md:text-4xl tracking-[0.1em]">
-              <span className="text-primary">SELECT</span>{' '}
-              <span className="text-on-surface">OPERATIVE</span>
-            </h1>
+        <div className="flex items-start justify-between gap-6 flex-wrap">
+          <div className="space-y-2">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="flex items-center gap-3"
+            >
+              <div className="relative">
+                <div className="w-10 h-10 border border-primary/30 rounded-lg flex items-center justify-center bg-primary/5">
+                  <Users className="w-5 h-5 text-primary" />
+                </div>
+                <motion.div
+                  className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-status-active"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
+              <div>
+                <p className="font-data-mono text-[9px] text-on-surface-muted/40 tracking-[0.25em] uppercase">
+                  GIU Intelligence Division
+                </p>
+                <p className="font-data-mono text-[9px] text-on-surface-muted/30 tracking-[0.2em]">
+                  OPERATIVE ROSTER v2.0
+                </p>
+              </div>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="font-heading text-4xl md:text-5xl tracking-[0.15em]"
+            >
+              <span className="text-primary">SELECT</span>
+              <span className="text-on-surface/80"> OPERATIVE</span>
+            </motion.h1>
+
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: '100%' }}
+              transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="h-[1px] bg-gradient-to-r from-primary/60 via-primary/20 to-transparent max-w-md"
+            />
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <SearchIcon className="w-4 h-4 text-on-surface-muted/50 absolute left-3 top-1/2 -translate-y-1/2" />
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            className="flex items-center gap-3"
+          >
+            <div className="relative group">
+              <SearchIcon className="w-4 h-4 text-on-surface-muted/30 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-primary/50 transition-colors" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search operatives..."
-                className="pl-9 w-56 bg-surface/50 border-on-surface-muted/20 focus:border-primary/50"
+                className="pl-9 w-64 bg-surface/30 border-on-surface-muted/10 focus:border-primary/40 focus:bg-surface/50 transition-all duration-300"
               />
             </div>
             {isAdmin && (
               <Button
                 onClick={() => setCreateOpen(true)}
-                className="bg-primary/10 border border-primary/30 hover:bg-primary/20 text-primary"
+                className="bg-primary/8 border border-primary/20 hover:bg-primary/15 hover:border-primary/40 text-primary transition-all duration-300"
               >
                 <Plus className="w-4 h-4" />
-                <span className="hidden md:inline">ADD OPERATIVE</span>
+                <span className="hidden md:inline font-label-caps text-[10px] tracking-[0.1em]">ADD</span>
               </Button>
             )}
-          </div>
+          </motion.div>
         </div>
-
-        <div className="mt-4 h-px bg-gradient-to-r from-primary/50 via-primary/20 to-transparent" />
       </motion.div>
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[60vh]">
           <motion.div
-            className="flex flex-col items-center gap-4"
-            animate={{ opacity: [0.5, 1, 0.5] }}
+            className="flex flex-col items-center gap-6"
+            animate={{ opacity: [0.4, 0.8, 0.4] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Loader2 className="w-10 h-10 text-primary animate-spin" />
-            <p className="font-data-mono text-xs text-on-surface-muted/60 tracking-wider">LOADING OPERATIVES...</p>
+            <div className="relative">
+              <Loader2 className="w-12 h-12 text-primary animate-spin" />
+              <div className="absolute inset-0 w-12 h-12 border border-primary/20 rounded-full animate-ping" />
+            </div>
+            <div className="text-center space-y-1">
+              <p className="font-data-mono text-xs text-on-surface-muted/50 tracking-[0.2em]">LOADING</p>
+              <p className="font-data-mono text-[10px] text-on-surface-muted/30 tracking-wider">OPERATIVE DATABASE</p>
+            </div>
           </motion.div>
         </div>
       ) : filtered.length === 0 ? (
@@ -111,12 +173,12 @@ export default function MembersPage() {
           description={search ? 'No match for search criteria' : 'No operatives registered'}
         />
       ) : (
-        <div className="flex gap-6 h-[calc(100vh-220px)]">
+        <div className="relative flex gap-8 h-[calc(100vh-240px)]">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="w-72 lg:w-80 overflow-y-auto pr-2 space-y-2 scrollbar-thin scrollbar-track-surface scrollbar-thumb-surface-elevated"
+            initial={{ opacity: 0, x: -50, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="w-72 lg:w-80 overflow-y-auto pr-3 space-y-3 scrollbar-thin scrollbar-track-surface/50 scrollbar-thumb-surface-elevated/50"
           >
             {filtered.map((profile, i) => (
               <CharacterCard
@@ -131,9 +193,9 @@ export default function MembersPage() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            initial={{ opacity: 0, scale: 0.9, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            transition={{ duration: 0.7, delay: 0.3 }}
             className="flex-1"
           >
             <FeaturedCharacter profile={selectedProfile} />
@@ -142,29 +204,36 @@ export default function MembersPage() {
       )}
 
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-6 pt-4 border-t border-on-surface-muted/10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+        className="relative mt-8 pt-5 border-t border-on-surface-muted/8"
       >
-        <div className="flex items-center justify-between font-data-mono text-[10px] text-on-surface-muted/50 tracking-wider">
-          <div className="flex items-center gap-4">
-            <span>TOTAL: {profiles.length}</span>
-            <span className="text-primary/50">•</span>
-            <span>DISPLAYED: {filtered.length}</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-6 font-data-mono text-[10px] text-on-surface-muted/35 tracking-[0.15em]">
+            <div className="flex items-center gap-2">
+              <Activity className="w-3 h-3 text-primary/40" />
+              <span>TOTAL: {profiles.length}</span>
+            </div>
+            <span className="text-primary/20">|</span>
+            <div className="flex items-center gap-2">
+              <Zap className="w-3 h-3 text-status-active/40" />
+              <span>DISPLAYED: {filtered.length}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
+
+          <div className="flex items-center gap-5 font-data-mono text-[9px] text-on-surface-muted/25 tracking-[0.12em]">
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-status-active" />
-              ACTIVE
+              <span className="w-1.5 h-1.5 rounded-full bg-status-active/60" />
+              <span className="text-on-surface-muted/40">ACTIVE</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              COMMANDER
+              <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
+              <span className="text-on-surface-muted/40">COMMANDER</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-threat-critical" />
-              ADMIN
+              <span className="w-1.5 h-1.5 rounded-full bg-threat-critical/60" />
+              <span className="text-on-surface-muted/40">ADMIN</span>
             </span>
           </div>
         </div>
@@ -218,36 +287,36 @@ function CreateDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-heading text-lg tracking-wider">NEW OPERATIVE</DialogTitle>
-          <DialogDescription className="font-data-mono text-xs text-on-surface-muted/60">
+          <DialogTitle className="font-heading text-lg tracking-[0.15em]">NEW OPERATIVE</DialogTitle>
+          <DialogDescription className="font-data-mono text-[10px] text-on-surface-muted/50 tracking-wider">
             Register new team member
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label className="font-data-mono text-[10px] tracking-wider text-on-surface-muted/70">FULL NAME</Label>
+            <Label className="font-data-mono text-[9px] tracking-[0.15em] text-on-surface-muted/50 uppercase">Full Name</Label>
             <Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
           </div>
           <div>
-            <Label className="font-data-mono text-[10px] tracking-wider text-on-surface-muted/70">CODENAME</Label>
-            <Input value={form.codename} onChange={(e) => setForm({ ...form, codename: e.target.value })} placeholder="Optional" className="font-data-mono tracking-wider" />
+            <Label className="font-data-mono text-[9px] tracking-[0.15em] text-on-surface-muted/50 uppercase">Codename</Label>
+            <Input value={form.codename} onChange={(e) => setForm({ ...form, codename: e.target.value })} placeholder="Optional" className="font-data-mono tracking-[0.1em]" />
           </div>
           <div>
-            <Label className="font-data-mono text-[10px] tracking-wider text-on-surface-muted/70">EMAIL</Label>
+            <Label className="font-data-mono text-[9px] tracking-[0.15em] text-on-surface-muted/50 uppercase">Email</Label>
             <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
           </div>
           <div>
-            <Label className="font-data-mono text-[10px] tracking-wider text-on-surface-muted/70">PASSWORD</Label>
+            <Label className="font-data-mono text-[9px] tracking-[0.15em] text-on-surface-muted/50 uppercase">Password</Label>
             <div className="relative">
               <Input type={showPassword ? 'text' : 'password'} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-muted/50 hover:text-on-surface-muted">
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-muted/30 hover:text-on-surface-muted/60 transition-colors">
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="font-data-mono text-[10px] tracking-wider text-on-surface-muted/70">RANK</Label>
+              <Label className="font-data-mono text-[9px] tracking-[0.15em] text-on-surface-muted/50 uppercase">Rank</Label>
               <Select value={form.rank} onValueChange={(v) => setForm({ ...form, rank: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -256,7 +325,7 @@ function CreateDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
               </Select>
             </div>
             <div>
-              <Label className="font-data-mono text-[10px] tracking-wider text-on-surface-muted/70">ROLE</Label>
+              <Label className="font-data-mono text-[9px] tracking-[0.15em] text-on-surface-muted/50 uppercase">Role</Label>
               <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v as Profile['role'] })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -267,9 +336,9 @@ function CreateDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
               </Select>
             </div>
           </div>
-          <DialogFooter className="gap-2">
-            <DialogClose asChild><Button variant="outline" className="border-on-surface-muted/20">CANCEL</Button></DialogClose>
-            <Button type="submit" disabled={create.isPending} className="bg-primary/10 border border-primary/30 text-primary">
+          <DialogFooter className="gap-2 pt-2">
+            <DialogClose asChild><Button variant="outline" className="border-on-surface-muted/15 hover:bg-surface-elevated/50">CANCEL</Button></DialogClose>
+            <Button type="submit" disabled={create.isPending} className="bg-primary/10 border border-primary/30 hover:bg-primary/20 text-primary">
               {create.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               REGISTER
             </Button>
@@ -288,13 +357,13 @@ function DeleteDialog({ target, onOpenChange }: { target: Profile | null; onOpen
     <Dialog open={!!target} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-heading text-lg tracking-wider">REMOVE OPERATIVE</DialogTitle>
-          <DialogDescription className="font-data-mono text-xs text-on-surface-muted/60">
+          <DialogTitle className="font-heading text-lg tracking-[0.15em]">REMOVE OPERATIVE</DialogTitle>
+          <DialogDescription className="font-data-mono text-[10px] text-on-surface-muted/50 tracking-wider">
             Remove <span className="text-primary">{target.full_name}</span>? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">
-          <DialogClose asChild><Button variant="outline" className="border-on-surface-muted/20">CANCEL</Button></DialogClose>
+          <DialogClose asChild><Button variant="outline" className="border-on-surface-muted/15 hover:bg-surface-elevated/50">CANCEL</Button></DialogClose>
           <Button
             variant="destructive"
             onClick={async () => {
