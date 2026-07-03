@@ -107,7 +107,7 @@ export function FeaturedCharacter({ profile, className }: FeaturedCharacterProps
   return (
     <div
       className={cn(
-        'relative h-full min-h-[600px] rounded-xl overflow-hidden noise-overlay scanlines',
+        'relative h-full min-h-[600px] rounded-xl overflow-y-auto noise-overlay scanlines',
         className,
       )}
       onMouseMove={handleMouseMove}
