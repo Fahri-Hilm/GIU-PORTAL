@@ -11,7 +11,7 @@ const SIZE_MAP = {
   sm: { w: 72, h: 96, sizes: '72px' },
   md: { w: 150, h: 200, sizes: '150px' },
   lg: { w: 300, h: 400, sizes: '300px' },
-  xl: { w: 480, h: 640, sizes: '480px' },
+  xl: { w: 400, h: 533, sizes: '400px' },
 } as const;
 
 interface CharacterPortraitProps {
