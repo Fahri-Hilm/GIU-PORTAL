@@ -19,6 +19,7 @@ import {
 import { motion, useReducedMotion } from 'motion/react';
 import { useProfiles, useCreateProfile, useDeleteProfile } from '@/lib/queries';
 import { useAuthStore } from '@/stores/auth';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -35,18 +36,29 @@ export default function MembersPage() {
   const currentUser = useAuthStore((s) => s.user);
   const reducedMotion = useReducedMotion();
   const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<Profile['role'] | 'all'>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'rank' | 'recent'>('recent');
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [uploadTarget, setUploadTarget] = useState<Profile | null>(null);
 
-  const filtered = profiles.filter(
-    (p) =>
-      p.full_name.toLowerCase().includes(search.toLowerCase()) ||
-      p.email.toLowerCase().includes(search.toLowerCase()) ||
-      p.rank.toLowerCase().includes(search.toLowerCase()) ||
-      (p.codename ?? '').toLowerCase().includes(search.toLowerCase()),
-  );
+  const filtered = profiles
+    .filter((p) => {
+      if (roleFilter !== 'all' && p.role !== roleFilter) return false;
+      const q = search.toLowerCase();
+      return (
+        p.full_name.toLowerCase().includes(q) ||
+        p.email.toLowerCase().includes(q) ||
+        p.rank.toLowerCase().includes(q) ||
+        (p.codename ?? '').toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => {
+      if (sortBy === 'name') return a.full_name.localeCompare(b.full_name);
+      if (sortBy === 'rank') return a.rank.localeCompare(b.rank);
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
   const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'commander';
 
@@ -54,6 +66,11 @@ export default function MembersPage() {
   if (!selectedProfile && firstProfile) {
     setSelectedProfile(firstProfile);
   }
+
+  const grouped: { label: string; items: Profile[] }[] = [
+    { label: 'KOMANDO', items: filtered.filter((p) => p.role === 'admin' || p.role === 'commander') },
+    { label: 'ANALIS', items: filtered.filter((p) => p.role === 'analyst') },
+  ].filter((g) => g.items.length > 0);
 
   return (
     <div className="relative min-h-screen p-6 md:p-8 max-w-[1600px] mx-auto">
@@ -150,6 +167,47 @@ export default function MembersPage() {
         </div>
       </motion.div>
 
+      <motion.div
+        initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: reducedMotion ? 0 : 0.6, duration: 0.4 }}
+        className="flex items-center gap-3 flex-wrap mb-2"
+      >
+        <div className="flex items-center gap-1 p-1 rounded-lg bg-surface/40 border border-border-steel/40">
+          {(['all', 'admin', 'commander', 'analyst'] as const).map((r) => (
+            <button
+              key={r}
+              onClick={() => setRoleFilter(r)}
+              className={cn(
+                'px-3 py-1 rounded-md font-data-mono text-[10px] tracking-wider uppercase transition-all',
+                roleFilter === r
+                  ? 'bg-primary/15 text-primary border border-primary/30'
+                  : 'text-on-surface-muted/50 hover:text-on-surface-muted hover:bg-surface-elevated/40 border border-transparent',
+              )}
+            >
+              {r === 'all' ? 'ALL' : r}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-2 ml-auto">
+          <span className="font-data-mono text-[9px] text-on-surface-muted/40 tracking-widest uppercase">SORT</span>
+          {(['recent', 'name', 'rank'] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => setSortBy(s)}
+              className={cn(
+                'px-2.5 py-1 rounded-md font-data-mono text-[10px] tracking-wider uppercase transition-all',
+                sortBy === s
+                  ? 'bg-primary/10 text-primary border border-primary/20'
+                  : 'text-on-surface-muted/50 hover:text-on-surface-muted border border-transparent',
+              )}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
       {isLoading ? (
         <div className="flex items-center justify-center h-[60vh]">
           <motion.div
@@ -168,28 +226,56 @@ export default function MembersPage() {
           </motion.div>
         </div>
       ) : filtered.length === 0 ? (
-        <EmptyState
-          icon={User}
-          title="NO OPERATIVES FOUND"
-          description={search ? 'No match for search criteria' : 'No operatives registered'}
-        />
+        <div className="flex flex-col items-center justify-center h-[50vh] space-y-6">
+          <div className="relative w-32 h-32">
+            <motion.div
+              className="absolute inset-0 border-2 border-dashed border-primary/20 rounded-lg"
+              animate={reducedMotion ? undefined : { rotate: 360 }}
+              transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <User className="w-12 h-12 text-primary/20" />
+            </div>
+          </div>
+          <div className="text-center space-y-2">
+            <p className="font-heading text-2xl text-on-surface-muted/60 tracking-[0.2em] uppercase">
+              NO OPERATIVES FOUND
+            </p>
+            <p className="font-data-mono text-[10px] text-on-surface-muted/40 tracking-wider">
+              {search ? 'NO MATCH FOR SEARCH CRITERIA' : 'NO OPERATIVES REGISTERED'}
+            </p>
+          </div>
+        </div>
       ) : (
-        <div className="relative flex gap-8 h-[calc(100vh-240px)]">
+        <div className="relative flex gap-8 h-[calc(100vh-280px)]">
           <motion.div
             initial={reducedMotion ? false : { opacity: 0, x: -50, filter: 'blur(8px)' }}
             animate={{ opacity: 1, x: 0, filter: reducedMotion ? 'none' : 'blur(0px)' }}
             transition={{ duration: 0.6, delay: reducedMotion ? 0 : 0.2 }}
-            className="w-72 lg:w-80 overflow-y-auto pr-3 space-y-3 scrollbar-thin scrollbar-track-surface/50 scrollbar-thumb-surface-elevated/50"
+            className="w-72 lg:w-80 overflow-y-auto pr-3 space-y-4 scrollbar-thin scrollbar-track-surface/50 scrollbar-thumb-surface-elevated/50"
           >
-            {filtered.map((profile, i) => (
-              <CharacterCard
-                key={profile.id}
-                profile={profile}
-                isSelected={selectedProfile?.id === profile.id}
-                onSelect={setSelectedProfile}
-                index={i}
-                onUploadClick={setUploadTarget}
-              />
+            {grouped.map((group) => (
+              <div key={group.label} className="space-y-2">
+                <div className="flex items-center gap-2 px-1">
+                  <span className="font-data-mono text-[9px] text-on-surface-muted/40 tracking-widest uppercase">
+                    {group.label}
+                  </span>
+                  <div className="flex-1 h-px bg-border-steel/30" />
+                  <span className="font-data-mono text-[9px] text-on-surface-muted/30 tracking-wider">
+                    {group.items.length}
+                  </span>
+                </div>
+                {group.items.map((profile, i) => (
+                  <CharacterCard
+                    key={profile.id}
+                    profile={profile}
+                    isSelected={selectedProfile?.id === profile.id}
+                    onSelect={setSelectedProfile}
+                    index={i}
+                    onUploadClick={setUploadTarget}
+                  />
+                ))}
+              </div>
             ))}
           </motion.div>
 

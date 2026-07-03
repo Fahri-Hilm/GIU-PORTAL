@@ -20,6 +20,25 @@ const ROLE_COLORS: Record<Profile['role'], string> = {
   analyst: 'text-status-active',
 };
 
+const ROLE_GLOWS: Record<Profile['role'], string> = {
+  admin: '0 0 20px -2px var(--color-threat-critical)',
+  commander: '0 0 20px -2px var(--color-primary)',
+  analyst: '0 0 20px -2px var(--color-status-active)',
+};
+
+const ROLE_BORDERS: Record<Profile['role'], string> = {
+  admin: 'border-threat-critical/40',
+  commander: 'border-primary/40',
+  analyst: 'border-status-active/40',
+};
+
+const STATUS_DOT_COLORS: Record<string, string> = {
+  active: 'bg-status-active',
+  standby: 'bg-status-pending',
+  deployed: 'bg-primary',
+  offline: 'bg-on-surface-muted',
+};
+
 interface CharacterCardProps {
   profile: Profile;
   isSelected: boolean;
@@ -52,17 +71,19 @@ export function CharacterCard({ profile, isSelected, onSelect, index, onUploadCl
           ? 'bg-gradient-to-r from-primary/8 via-surface-elevated to-surface-elevated'
           : 'bg-surface/40 hover:bg-surface-elevated/60',
       )}
+      style={!isSelected ? { boxShadow: ROLE_GLOWS[profile.role] } : undefined}
     >
       <div className="absolute inset-0 noise-overlay opacity-30 pointer-events-none" />
       <div className="absolute inset-0 opacity-[0.02] bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(255,255,255,0.1)_2px,rgba(255,255,255,0.1)_4px)] pointer-events-none" />
 
       <div
         className={cn(
-          'absolute inset-0 border transition-all duration-500 pointer-events-none rounded-lg',
+          'absolute inset-0 border-2 transition-all duration-500 pointer-events-none rounded-lg',
           isSelected
-            ? 'border-primary/40 animate-border-pulse'
-            : 'border-on-surface-muted/10 group-hover:border-primary/20',
+            ? cn('border-primary/40 animate-border-pulse')
+            : cn(ROLE_BORDERS[profile.role], 'group-hover:border-primary/40'),
         )}
+        style={!isSelected ? { boxShadow: `inset 0 0 15px ${ROLE_GLOWS[profile.role].replace('0 0 20px -2px', '0 0 10px')}` } : undefined}
       />
 
       {isSelected && (
@@ -96,16 +117,35 @@ export function CharacterCard({ profile, isSelected, onSelect, index, onUploadCl
           )}
 
           <div className={cn(
-            'absolute top-2 left-2 p-1.5 rounded-md bg-surface-elevated/90 border border-on-surface-muted/20',
+            'absolute top-2 left-2 p-1.5 rounded-md bg-surface-elevated/90 border',
+            ROLE_BORDERS[profile.role],
             ROLE_COLORS[profile.role],
           )}>
             <RoleIcon className="w-3 h-3" />
           </div>
+
+          <div className="absolute bottom-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-elevated/90 border border-border-steel/40 z-20">
+            <span className={cn('w-1.5 h-1.5 rounded-full', STATUS_DOT_COLORS[profile.status ?? 'active'], profile.status === 'active' && 'animate-pulse')} />
+            <span className="font-data-mono text-[8px] text-on-surface-muted/70 tracking-wider uppercase">
+              {profile.status ?? 'active'}
+            </span>
+          </div>
+
+          {profile.mission_count != null && (
+            <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-surface-elevated/90 border border-primary/30 z-20">
+              <span className="font-data-mono text-[9px] text-primary/70 tracking-wider">
+                {profile.mission_count} OPS
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="mt-3 space-y-1.5">
           <div className="flex items-center gap-2">
-            <p className="font-data-mono text-[11px] text-primary tracking-[0.15em] truncate font-medium">
+            <p className={cn(
+              'font-data-mono text-[11px] tracking-[0.15em] truncate font-medium',
+              ROLE_COLORS[profile.role],
+            )}>
               {profile.codename?.toUpperCase() ?? 'OPERATOR'}
             </p>
             {isSelected && (

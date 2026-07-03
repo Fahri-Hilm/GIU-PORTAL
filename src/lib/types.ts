@@ -10,6 +10,9 @@ export interface Profile {
   avatar_url: string | null;
   role: 'analyst' | 'commander' | 'admin';
   created_at: string;
+  status?: 'active' | 'standby' | 'deployed' | 'offline' | null;
+  specialization?: string[] | null;
+  mission_count?: number | null;
 }
 
 export interface Organization {
