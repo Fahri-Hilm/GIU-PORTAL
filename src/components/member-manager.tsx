@@ -73,10 +73,10 @@ export function MemberManager() {
                     <CharacterPortrait profile={p} size="sm" animate={false} />
                     <button
                       onClick={() => setUploadTarget(p)}
-                      className="absolute -bottom-1 -right-1 p-1.5 rounded-md bg-surface-elevated border border-border-steel opacity-0 group-hover:opacity-100 hover:bg-primary/20 hover:border-primary/40 transition-all"
+                      className="absolute -bottom-1 -right-1 p-1.5 rounded-md bg-surface-elevated border border-primary/40 hover:bg-primary/20 hover:border-primary/60 transition-all shadow-lg"
                       title="Upload portrait"
                     >
-                      <Camera className="w-3 h-3 text-on-surface-muted" />
+                      <Camera className="w-3 h-3 text-primary" />
                     </button>
                   </div>
                   <div className="flex-1 min-w-0">

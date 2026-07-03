@@ -83,14 +83,15 @@ export function CharacterCard({ profile, isSelected, onSelect, index, onUploadCl
           {isAdmin && onUploadClick && (
             <motion.button
               initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
               whileHover={{ scale: 1.1 }}
               onClick={(e) => {
                 e.stopPropagation();
                 onUploadClick(profile);
               }}
-              className="absolute top-2 right-2 p-1.5 rounded-md bg-surface-elevated/90 border border-on-surface-muted/20 opacity-0 group-hover:opacity-100 hover:bg-primary/20 hover:border-primary/40 transition-all duration-300"
+              className="absolute top-2 right-2 p-1.5 rounded-md bg-surface-elevated/90 border border-primary/40 hover:bg-primary/20 hover:border-primary/60 transition-all duration-300 shadow-lg z-20"
             >
-              <Camera className="w-3 h-3 text-on-surface-muted group-hover:text-primary" />
+              <Camera className="w-3 h-3 text-primary" />
             </motion.button>
           )}
 
