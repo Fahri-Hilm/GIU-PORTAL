@@ -8,6 +8,7 @@ import type {
   MapMarker,
   Territory,
   Investigation,
+  InvestigationEvidence,
   Operation,
   Mission,
   ActivityEvent,
@@ -612,6 +613,80 @@ export const data = {
       return;
     }
     throw new Error('Mode mock tidak mendukung pembaruan anggota');
+  },
+
+  async listEvidence(investigationId: string): Promise<InvestigationEvidence[]> {
+    if (isSupabaseConfigured) {
+      const sb = supabaseBrowser();
+      const { data: rows, error } = await sb
+        .from('investigation_evidence')
+        .select('*, uploader:profiles!investigation_evidence_uploaded_by_fkey(full_name)')
+        .eq('investigation_id', investigationId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return (rows as (InvestigationEvidence & { uploader?: { full_name: string } | null })[]).map((r) => ({
+        ...r,
+        uploader_name: r.uploader?.full_name ?? null,
+      }));
+    }
+    return [];
+  },
+
+  async addEvidence(input: {
+    investigation_id: string;
+    photo_url?: string | null;
+    notes?: string | null;
+    location?: string | null;
+    evidence_type?: InvestigationEvidence['evidence_type'];
+  }): Promise<InvestigationEvidence> {
+    if (isSupabaseConfigured) {
+      const sb = supabaseBrowser();
+      const { data: userData } = await sb.auth.getUser();
+      const insert: Record<string, unknown> = {
+        investigation_id: input.investigation_id,
+        photo_url: input.photo_url ?? null,
+        notes: input.notes ?? null,
+        location: input.location ?? null,
+        evidence_type: input.evidence_type ?? 'surveillance',
+        uploaded_by: userData.user?.id ?? null,
+      };
+      const { data: row, error } = await sb
+        .from('investigation_evidence')
+        .insert(insert)
+        .select()
+        .single();
+      if (error) throw error;
+      return row as InvestigationEvidence;
+    }
+    throw new Error('Mode mock tidak mendukung evidence');
+  },
+
+  async deleteEvidence(id: string): Promise<void> {
+    if (isSupabaseConfigured) {
+      const sb = supabaseBrowser();
+      const { error } = await sb.from('investigation_evidence').delete().eq('id', id);
+      if (error) throw error;
+      return;
+    }
+    throw new Error('Mode mock tidak mendukung penghapusan evidence');
+  },
+
+  async uploadEvidencePhoto(file: File, investigationId: string): Promise<string> {
+    if (isSupabaseConfigured) {
+      const sb = supabaseBrowser();
+      const ext = file.name.split('.').pop() ?? 'jpg';
+      const path = `${investigationId}/${Date.now()}.${ext}`;
+      const { error } = await sb.storage.from('evidence').upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: pub } = sb.storage.from('evidence').getPublicUrl(path);
+      return pub.publicUrl;
+    }
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   },
 };
 

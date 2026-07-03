@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Plus, Search as SearchIcon, Filter, Search, FileEdit, User, Save, Clock, ChevronRight } from 'lucide-react';
-import { useInvestigations, useCreateInvestigation, useUpdateInvestigation, useOrganizations } from '@/lib/queries';
+import { useState, useMemo, useRef } from 'react';
+import { Plus, Search as SearchIcon, Filter, Search, FileEdit, User, Save, Clock, ChevronRight, Camera, Trash2, MapPin, Loader2 } from 'lucide-react';
+import { useInvestigations, useCreateInvestigation, useUpdateInvestigation, useOrganizations, useEvidence, useAddEvidence, useDeleteEvidence, useUploadEvidencePhoto } from '@/lib/queries';
+import { useAuthStore } from '@/stores/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TacticalCard } from '@/components/ui/tactical-card';
 import { PageHeader } from '@/components/ui/page-header';
@@ -16,7 +17,7 @@ import { EmptyState } from '@/components/ui/misc';
 import { INVESTIGATION_STATUS_META, INVESTIGATION_STATUS, THREAT_META, type InvestigationStatus, type ThreatLevel } from '@/lib/constants';
 import { cn, formatRelativeTime, formatDate } from '@/lib/utils';
 import { toast } from 'sonner';
-import type { Investigation } from '@/lib/types';
+import type { Investigation, InvestigationEvidence } from '@/lib/types';
 
 export default function InvestigationsPage() {
   const { data: investigations = [], isLoading } = useInvestigations();
@@ -194,41 +195,127 @@ function CreateInvestigationDialog({ open, onOpenChange, onCreated }: { open: bo
 function InvestigationDetailDialog({ investigation, onClose }: { investigation: Investigation | null; onClose: () => void }) {
   const updateInv = useUpdateInvestigation();
   const { data: orgs = [] } = useOrganizations();
+  const { data: evidence = [], isLoading: evidenceLoading } = useEvidence(investigation?.id);
+  const addEvidence = useAddEvidence();
+  const deleteEvidence = useDeleteEvidence();
+  const uploadPhoto = useUploadEvidencePhoto();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [notes, setNotes] = useState('');
+  const [location, setLocation] = useState('');
+  const [evidenceType, setEvidenceType] = useState<InvestigationEvidence['evidence_type']>('surveillance');
+
   if (!investigation) return null;
   const org = orgs.find((o) => o.id === investigation.organization_id);
 
   const changeStatus = async (status: InvestigationStatus) => {
     await updateInv.mutateAsync({ id: investigation.id, patch: { status, closed_at: status === 'closed' ? new Date().toISOString() : null } });
     toast.success(`Status diubah ke ${INVESTIGATION_STATUS_META[status].label}`);
-    onClose();
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const photoUrl = await uploadPhoto.mutateAsync({ file, investigationId: investigation.id });
+      await addEvidence.mutateAsync({
+        investigation_id: investigation.id,
+        photo_url: photoUrl,
+        notes: notes.trim() || null,
+        location: location.trim() || null,
+        evidence_type: evidenceType,
+      });
+      setNotes('');
+      setLocation('');
+      toast.success('Evidence ditambahkan');
+      if (fileRef.current) fileRef.current.value = '';
+    } catch (err) {
+      toast.error('Gagal upload evidence', { description: err instanceof Error ? err.message : undefined });
+    }
+  };
+
+  const handleAddNote = async () => {
+    if (!notes.trim()) {
+      toast.error('Isi catatan dulu');
+      return;
+    }
+    try {
+      await addEvidence.mutateAsync({
+        investigation_id: investigation.id,
+        photo_url: null,
+        notes: notes.trim(),
+        location: location.trim() || null,
+        evidence_type: evidenceType,
+      });
+      setNotes('');
+      setLocation('');
+      toast.success('Catatan ditambahkan');
+    } catch (err) {
+      toast.error('Gagal tambah catatan', { description: err instanceof Error ? err.message : undefined });
+    }
+  };
+
+  const handleDeleteEvidence = async (ev: InvestigationEvidence) => {
+    try {
+      await deleteEvidence.mutateAsync({ id: ev.id, investigationId: investigation.id });
+      toast.success('Evidence dihapus');
+    } catch (err) {
+      toast.error('Gagal hapus evidence', { description: err instanceof Error ? err.message : undefined });
+    }
+  };
+
+  const isClosed = investigation.status === 'closed';
+  const isOpen = investigation.status === 'active';
+  const isPending = investigation.status === 'pending';
+
+  const typeLabels: Record<InvestigationEvidence['evidence_type'], string> = {
+    surveillance: 'SURVEILLANCE',
+    document: 'DOKUMEN',
+    testimonial: 'KESAKSIAN',
+    intel: 'INTEL',
+    action: 'AKSI',
   };
 
   return (
     <Dialog open={!!investigation} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="font-data-mono text-data-mono text-primary">{investigation.case_number}</span>
             <ThreatBadge level={investigation.priority} />
+            <span className={cn(
+              'px-2 py-0.5 rounded border font-data-mono text-[9px] tracking-wider uppercase',
+              isOpen && 'border-status-active/40 bg-status-active/10 text-status-active',
+              isPending && 'border-status-pending/40 bg-status-pending/10 text-status-pending',
+              isClosed && 'border-on-surface-muted/40 bg-on-surface-muted/10 text-on-surface-muted',
+            )}>
+              {INVESTIGATION_STATUS_META[investigation.status].label}
+            </span>
           </div>
           <DialogTitle>{investigation.title}</DialogTitle>
-          <DialogDescription>{org ? `Terkait: ${org.name}` : 'Standalone'}</DialogDescription>
+          <DialogDescription>{org ? `Terkait: ${org.name}` : 'Standalone'} · Lead: {investigation.lead_analyst}</DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div>
-              <p className="font-data-mono text-on-surface-muted">ANALIS UTAMA</p>
-              <p className="font-body-md text-on-surface mt-1 flex items-center gap-1.5"><User className="w-3 h-3" /> {investigation.lead_analyst}</p>
-            </div>
+
+        <div className="space-y-5">
+          <div className="grid grid-cols-3 gap-3 text-xs">
             <div>
               <p className="font-data-mono text-on-surface-muted">DIBUKA</p>
               <p className="font-body-md text-on-surface mt-1 flex items-center gap-1.5"><Clock className="w-3 h-3" /> {formatDate(investigation.created_at)}</p>
             </div>
+            <div>
+              <p className="font-data-mono text-on-surface-muted">UPDATE TERAKHIR</p>
+              <p className="font-body-md text-on-surface mt-1">{formatRelativeTime(investigation.updated_at)}</p>
+            </div>
+            <div>
+              <p className="font-data-mono text-on-surface-muted">DITUTUP</p>
+              <p className="font-body-md text-on-surface mt-1">{investigation.closed_at ? formatDate(investigation.closed_at) : '—'}</p>
+            </div>
           </div>
+
           <div>
             <Label>Ringkasan</Label>
             <p className="font-body-md text-sm text-on-surface-variant leading-relaxed">{investigation.summary || 'Belum ada ringkasan.'}</p>
           </div>
+
           <div>
             <Label>Ubah Status</Label>
             <div className="flex gap-2">
@@ -247,6 +334,114 @@ function InvestigationDetailDialog({ investigation, onClose }: { investigation: 
                 );
               })}
             </div>
+          </div>
+
+          {!isClosed && (
+            <div className="border border-border-steel/40 rounded-lg p-3 space-y-3 bg-surface-gunmetal/20">
+              <Label className="flex items-center gap-1.5">
+                <Camera className="w-3 h-3 text-primary" /> TAMBAH EVIDENCE / CATATAN
+              </Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  placeholder="Lokasi (opsional)"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="text-xs h-9"
+                />
+                <Select value={evidenceType} onValueChange={(v) => setEvidenceType(v as InvestigationEvidence['evidence_type'])}>
+                  <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="surveillance">Surveillance</SelectItem>
+                    <SelectItem value="document">Dokumen</SelectItem>
+                    <SelectItem value="testimonial">Kesaksian</SelectItem>
+                    <SelectItem value="intel">Intel</SelectItem>
+                    <SelectItem value="action">Aksi</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Textarea
+                placeholder="Catatan / observasi pemantauan..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="text-xs min-h-[60px]"
+              />
+              <div className="flex gap-2">
+                <input ref={fileRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploadPhoto.isPending || addEvidence.isPending}
+                  className="border-primary/30 text-primary hover:bg-primary/10"
+                >
+                  {uploadPhoto.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
+                  UPLOAD FOTO
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleAddNote}
+                  disabled={addEvidence.isPending}
+                >
+                  {addEvidence.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                  SIMPAN CATATAN
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <Label className="font-data-mono text-[10px] tracking-widest">TIMELINE EVIDENCE ({evidence.length})</Label>
+              {evidenceLoading && <Loader2 className="w-3 h-3 animate-spin text-on-surface-muted" />}
+            </div>
+            {evidence.length === 0 ? (
+              <div className="text-center py-8 border border-dashed border-border-steel/30 rounded-lg">
+                <FileEdit className="w-8 h-8 text-on-surface-muted/30 mx-auto" />
+                <p className="font-data-mono text-[10px] text-on-surface-muted/40 mt-2 tracking-wider">BELUM ADA EVIDENCE</p>
+              </div>
+            ) : (
+              <div className="relative space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                <div className="absolute left-4 top-2 bottom-2 w-px bg-border-steel/40" />
+                {evidence.map((ev) => (
+                  <div key={ev.id} className="relative pl-10">
+                    <div className="absolute left-2 top-3 w-3 h-3 rounded-full border-2 border-primary bg-surface z-10" />
+                    <div className="border border-border-steel/40 rounded-lg p-3 bg-surface-gunmetal/30 hover:border-primary/30 transition-smooth group">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="px-1.5 py-0.5 rounded border border-primary/30 bg-primary/5 font-data-mono text-[8px] text-primary tracking-wider">
+                            {typeLabels[ev.evidence_type]}
+                          </span>
+                          <span className="font-data-mono text-[9px] text-on-surface-muted">{formatRelativeTime(ev.created_at)}</span>
+                          {ev.location && (
+                            <span className="flex items-center gap-1 font-data-mono text-[9px] text-on-surface-muted/60">
+                              <MapPin className="w-2.5 h-2.5" /> {ev.location}
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleDeleteEvidence(ev)}
+                          className="opacity-0 group-hover:opacity-100 text-on-surface-muted hover:text-threat-critical transition-smooth"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                      {ev.photo_url && (
+                        <div className="relative w-full h-32 rounded-md overflow-hidden mb-2 bg-surface-container-lowest">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={ev.photo_url} alt="Evidence" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      {ev.notes && (
+                        <p className="font-body-md text-xs text-on-surface-variant leading-relaxed">{ev.notes}</p>
+                      )}
+                      {ev.uploader_name && (
+                        <p className="font-data-mono text-[9px] text-on-surface-muted/50 mt-2">— {ev.uploader_name}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>

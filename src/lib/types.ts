@@ -76,6 +76,18 @@ export interface Investigation {
   closed_at: string | null;
 }
 
+export interface InvestigationEvidence {
+  id: string;
+  investigation_id: string;
+  uploaded_by: string | null;
+  photo_url: string | null;
+  notes: string | null;
+  location: string | null;
+  evidence_type: 'surveillance' | 'document' | 'testimonial' | 'intel' | 'action';
+  created_at: string;
+  uploader_name?: string | null;
+}
+
 export interface Operation {
   id: string;
   codename: string;

@@ -155,6 +155,43 @@ export function useUpdateInvestigation() {
   });
 }
 
+export function useEvidence(investigationId: string | null | undefined) {
+  return useQuery({
+    queryKey: ['evidence', investigationId],
+    queryFn: () => data.listEvidence(investigationId as string),
+    enabled: !!investigationId,
+  });
+}
+
+export function useAddEvidence() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: Parameters<typeof data.addEvidence>[0]) => data.addEvidence(input),
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ['evidence', vars.investigation_id] });
+      qc.invalidateQueries({ queryKey: queryKeys.activity() });
+    },
+  });
+}
+
+export function useDeleteEvidence() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, investigationId }: { id: string; investigationId: string }) =>
+      data.deleteEvidence(id).then(() => investigationId),
+    onSuccess: (investigationId) => {
+      qc.invalidateQueries({ queryKey: ['evidence', investigationId] });
+    },
+  });
+}
+
+export function useUploadEvidencePhoto() {
+  return useMutation({
+    mutationFn: ({ file, investigationId }: { file: File; investigationId: string }) =>
+      data.uploadEvidencePhoto(file, investigationId),
+  });
+}
+
 export function useOperations() {
   return useQuery({ queryKey: queryKeys.operations, queryFn: () => data.listOperations() });
 }
