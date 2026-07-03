@@ -163,7 +163,7 @@ export function FeaturedCharacter({ profile, className }: FeaturedCharacterProps
             style={{ transform: 'rotate(-25deg)' }}
           >
             <span className="font-data-mono text-5xl md:text-7xl font-bold tracking-[0.3em] text-primary whitespace-nowrap">
-              KLASIFIKASI RAHASIA
+              DOKUMEN RAHASIA
             </span>
           </div>
 
