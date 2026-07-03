@@ -107,7 +107,7 @@ export function FeaturedCharacter({ profile, className }: FeaturedCharacterProps
   return (
     <div
       className={cn(
-        'relative h-full min-h-[600px] rounded-xl overflow-y-auto noise-overlay scanlines',
+        'relative h-auto min-h-[600px] rounded-xl overflow-y-auto noise-overlay scanlines',
         className,
       )}
       onMouseMove={handleMouseMove}
@@ -228,7 +228,7 @@ export function FeaturedCharacter({ profile, className }: FeaturedCharacterProps
             />
           </div>
 
-          <div className="relative h-full flex flex-col items-center justify-center p-8">
+          <div className="relative min-h-[600px] flex flex-col items-center justify-center p-8">
             <AnimatePresence mode="wait">
               <motion.div
                 key={profile.id}

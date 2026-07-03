@@ -247,7 +247,7 @@ export default function MembersPage() {
           </div>
         </div>
       ) : (
-        <div className="relative flex gap-8 h-[calc(100vh-280px)]">
+        <div className="relative flex gap-8 min-h-[calc(100vh-280px)]">
           <motion.div
             initial={reducedMotion ? false : { opacity: 0, x: -50, filter: 'blur(8px)' }}
             animate={{ opacity: 1, x: 0, filter: reducedMotion ? 'none' : 'blur(0px)' }}
