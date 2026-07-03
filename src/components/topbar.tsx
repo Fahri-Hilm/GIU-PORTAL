@@ -1,22 +1,39 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { BellRing, Search as SearchIcon, Menu, Shield } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { NAV_ITEMS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useUIStore } from '@/stores/ui';
+import { useActivity } from '@/lib/queries';
 import { cn } from '@/lib/utils';
+
+const SECTION_MAP: Record<string, string> = {
+  '/dashboard': 'INTELIJEN',
+  '/map': 'INTELIJEN',
+  '/markers': 'INTELIJEN',
+  '/organizations': 'TARGET',
+  '/members': 'TARGET',
+  '/investigations': 'OPERASI',
+  '/operations': 'OPERASI',
+  '/activity': 'OPERASI',
+  '/settings': 'SISTEM',
+};
 
 export function Topbar() {
   const pathname = usePathname();
   const toggleSidebar = useUIStore((s) => s.toggleSidebar);
   const collapse = useUIStore((s) => s.sidebarCollapsed);
   const [now, setNow] = useState<string>('');
+  const { data: activity = [] } = useActivity(10);
 
   const active = NAV_ITEMS.find((i) => pathname === i.href || pathname.startsWith(i.href + '/'));
   const title = active?.label ?? 'GIU Portal';
+  const section = active ? SECTION_MAP[active.href] ?? 'PORTAL' : 'PORTAL';
+
+  const unreadCount = useMemo(() => activity.length, [activity]);
 
   useEffect(() => {
     const tick = () =>
@@ -52,26 +69,31 @@ export function Topbar() {
           <Shield className="w-5 h-5 text-primary" />
         </div>
         <div className="min-w-0">
-          <h2 className="font-headline-md text-headline-md text-on-surface leading-none truncate">{title}</h2>
-          <p className="font-data-mono text-data-mono text-on-surface-muted mt-0.5 leading-none">
-            THREAT LEVEL: <span className="text-threat-critical">ELEVATED</span>
+          <p className="font-data-mono text-[9px] text-on-surface-muted/40 tracking-widest uppercase leading-none mb-1">
+            {section}
           </p>
+          <h2 className="font-headline-md text-headline-md text-on-surface leading-none truncate">{title}</h2>
         </div>
       </div>
 
       <div className="ml-auto hidden md:flex items-center gap-3">
         <div className="relative">
           <SearchIcon className="w-4 h-4 text-on-surface-muted absolute left-3 top-1/2 -translate-y-1/2" />
-          <Input placeholder="Cari organisasi, kasus, operasi..." className="pl-9 w-72 h-10 text-xs" />
+          <Input placeholder="Cari organisasi, kasus, operasi..." className="pl-9 pr-8 w-72 h-10 text-xs" />
+          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 font-data-mono text-[10px] bg-surface-elevated border border-border-steel rounded px-1.5 py-0.5 text-on-surface-muted pointer-events-none">
+            /
+          </kbd>
         </div>
         <div className="font-data-mono text-data-mono text-on-surface-muted tabular-nums hidden lg:block min-w-[160px] text-right">
           {now}
         </div>
         <Button variant="outline" size="icon" className="relative">
           <BellRing className="w-4 h-4" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-threat-critical text-white text-[9px] font-bold flex items-center justify-center">
-            3
-          </span>
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-threat-critical text-white text-[9px] font-bold flex items-center justify-center">
+              {unreadCount}
+            </span>
+          )}
         </Button>
       </div>
     </header>

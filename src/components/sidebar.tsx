@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Shield, LogOut } from 'lucide-react';
@@ -12,6 +13,13 @@ import { ModeBadge } from '@/components/providers';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/stores/ui';
 
+const SECTIONS = [
+  { label: 'INTELIJEN', hrefs: ['/dashboard', '/map', '/markers'] },
+  { label: 'TARGET', hrefs: ['/organizations', '/members'] },
+  { label: 'OPERASI', hrefs: ['/investigations', '/operations', '/activity'] },
+  { label: 'SISTEM', hrefs: ['/settings'] },
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
@@ -23,6 +31,9 @@ export function Sidebar() {
     await signOut();
     window.location.href = '/login';
   };
+
+  let sectionIndex = 0;
+  let globalIndex = 0;
 
   return (
     <nav
@@ -58,27 +69,42 @@ export function Sidebar() {
       )}
 
       <ul className="flex-1 flex flex-col gap-1 px-3 overflow-y-auto">
-        {NAV_ITEMS.map((item, i) => {
+        {NAV_ITEMS.map((item) => {
           const Icon = icons[item.icon] ?? icons.Shield;
           const active = pathname === item.href || pathname.startsWith(item.href + '/');
+          const section = SECTIONS.find((s) => s.hrefs.includes(item.href));
+          const showSectionLabel = !collapse && section && item.href === section.hrefs[0];
+          const i = globalIndex++;
           return (
-            <li key={item.href} className="opacity-0 animate-slide-in-left group" style={{ animationDelay: `${0.1 + i * 0.05}s`, animationFillMode: 'forwards' }}>
-              <Link
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-smooth relative overflow-hidden',
-                  collapse && 'justify-center',
-                  active
-                    ? 'bg-primary/10 text-primary border-r-2 border-primary'
-                    : 'text-on-surface-variant hover:text-primary hover:bg-surface-gunmetal/60',
-                )}
-                title={collapse ? item.label : undefined}
+            <React.Fragment key={item.href}>
+              {showSectionLabel && (
+                <li className="font-data-mono text-[9px] text-on-surface-muted/30 tracking-widest uppercase px-3 pt-4 pb-1">
+                  {section.label}
+                </li>
+              )}
+              <li
+                className="opacity-0 animate-slide-in-left group"
+                style={{ animationDelay: `${0.1 + i * 0.05}s`, animationFillMode: 'forwards' }}
               >
-                <div className="absolute inset-y-0 right-0 w-0 bg-primary group-hover:w-1 transition-all duration-300" />
-                <Icon className={cn('w-5 h-5 shrink-0', active && 'fill-primary/20')} />
-                {!collapse && <span className="font-label-caps text-label-caps">{item.label}</span>}
-              </Link>
-            </li>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-smooth relative overflow-hidden',
+                    collapse && 'justify-center',
+                    active
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-on-surface-variant hover:text-primary hover:bg-surface-gunmetal/60',
+                  )}
+                  title={collapse ? item.label : undefined}
+                >
+                  {active && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_var(--color-primary)]" />
+                  )}
+                  <Icon className={cn('w-5 h-5 shrink-0', active && 'fill-primary/20')} />
+                  {!collapse && <span className="font-label-caps text-label-caps">{item.label}</span>}
+                </Link>
+              </li>
+            </React.Fragment>
           );
         })}
       </ul>
@@ -86,7 +112,12 @@ export function Sidebar() {
       <div className="mt-auto px-3 border-t border-border-steel/50 pt-4 flex flex-col gap-2">
         {user && (
           <div className={cn('flex items-center gap-3 px-2 py-2 rounded-lg', collapse && 'justify-center')}>
-            <AvatarName name={user.full_name} src={user.avatar_url} className="w-9 h-9" />
+            <div className="relative">
+              <AvatarName name={user.full_name} src={user.avatar_url} className="w-9 h-9" />
+              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-status-active border-2 border-surface-graphite">
+                <div className="absolute inset-0 rounded-full bg-status-active animate-ping opacity-75" />
+              </div>
+            </div>
             {!collapse && (
               <div className="flex-1 min-w-0">
                 <p className="font-body-md text-sm text-on-surface truncate">{user.full_name}</p>
