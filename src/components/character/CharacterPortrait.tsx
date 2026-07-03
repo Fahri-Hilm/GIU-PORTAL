@@ -8,10 +8,10 @@ import { getCharacterAssetPath, getCharacterFallbackPath } from './useCharacterA
 import type { Profile } from '@/lib/types';
 
 const SIZE_MAP = {
-  sm: { w: 80, h: 120, sizes: '80px' },
-  md: { w: 160, h: 240, sizes: '160px' },
-  lg: { w: 320, h: 480, sizes: '320px' },
-  xl: { w: 512, h: 768, sizes: '512px' },
+  sm: { w: 96, h: 72, sizes: '96px' },
+  md: { w: 200, h: 150, sizes: '200px' },
+  lg: { w: 400, h: 300, sizes: '400px' },
+  xl: { w: 640, h: 480, sizes: '640px' },
 } as const;
 
 interface CharacterPortraitProps {
