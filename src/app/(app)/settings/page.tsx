@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { User, Save, Trash2, Eye, EyeOff, Shield, Database, RotateCcw, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { TacticalCard } from '@/components/ui/tactical-card';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/form';
 import { AvatarName } from '@/components/ui/avatar';
@@ -41,12 +43,9 @@ export default function SettingsPage() {
 
   return (
     <div className="p-gutter-md space-y-gutter-md max-w-3xl mx-auto">
-      <div className="opacity-0 animate-fade-slide-up" style={{ animationFillMode: 'forwards' }}>
-        <p className="font-data-mono text-data-mono text-on-surface-muted">PREFERENSI OPERATOR</p>
-        <h1 className="font-display-lg text-display-lg text-on-surface mt-1">Pengaturan</h1>
-      </div>
+      <PageHeader label="PREFERENSI OPERATOR" title="Pengaturan" icon={User} />
 
-      <Card className="opacity-0 animate-fade-slide-up stagger-1">
+      <TacticalCard className="opacity-0 animate-fade-slide-up stagger-1">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2"><User className="w-4 h-4 text-primary" /> Profil Operator</CardTitle>
           <CardDescription>Informasi yang ditampilkan di sidebar dan header.</CardDescription>
@@ -72,9 +71,9 @@ export default function SettingsPage() {
           </div>
           <Button onClick={handleSave}><Save className="w-4 h-4" /> SIMPAN PROFIL</Button>
         </CardContent>
-      </Card>
+      </TacticalCard>
 
-      <Card className="opacity-0 animate-fade-slide-up stagger-2">
+      <TacticalCard className="opacity-0 animate-fade-slide-up stagger-2">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2"><Eye className="w-4 h-4 text-primary" /> Tampilan</CardTitle>
           <CardDescription>Kontrol efek visual antarmuka.</CardDescription>
@@ -90,9 +89,9 @@ export default function SettingsPage() {
             </Button>
           </div>
         </CardContent>
-      </Card>
+      </TacticalCard>
 
-      <Card className="opacity-0 animate-fade-slide-up stagger-3">
+      <TacticalCard className="opacity-0 animate-fade-slide-up stagger-3">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2"><Database className="w-4 h-4 text-primary" /> Sistem Data</CardTitle>
           <CardDescription>
@@ -114,9 +113,9 @@ export default function SettingsPage() {
             </Button>
           )}
         </CardContent>
-      </Card>
+      </TacticalCard>
 
-      <Card className="opacity-0 animate-fade-slide-up stagger-4 border-threat-critical/30">
+      <TacticalCard accent="var(--color-threat-critical)" className="opacity-0 animate-fade-slide-up stagger-4 border-threat-critical/30">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2 text-threat-critical"><Shield className="w-4 h-4" /> Sesi &amp; Keamanan</CardTitle>
           <CardDescription>Akhiri sesi operasional saat ini.</CardDescription>
@@ -126,7 +125,7 @@ export default function SettingsPage() {
             <LogOut className="w-4 h-4" /> KELUAR DARI PORTAL
           </Button>
         </CardContent>
-      </Card>
+      </TacticalCard>
 
       <p className="text-center font-data-mono text-data-mono text-on-surface-muted py-4">
         GIU INTELLIGENCE PORTAL · v1.0.0 · KLASIFIKASI RAHASIA

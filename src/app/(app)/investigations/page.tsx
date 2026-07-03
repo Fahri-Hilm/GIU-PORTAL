@@ -4,6 +4,9 @@ import { useState, useMemo } from 'react';
 import { Plus, Search as SearchIcon, Filter, Search, FileEdit, User, Save, Clock, ChevronRight } from 'lucide-react';
 import { useInvestigations, useCreateInvestigation, useUpdateInvestigation, useOrganizations } from '@/lib/queries';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TacticalCard } from '@/components/ui/tactical-card';
+import { PageHeader } from '@/components/ui/page-header';
+import { SkeletonCard } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea, Label } from '@/components/ui/form';
 import { Badge, ThreatBadge } from '@/components/ui/badge';
@@ -32,21 +35,16 @@ export default function InvestigationsPage() {
   }, [investigations, search, statusFilter]);
 
   return (
-    <div className="p-gutter-md space-y-gutter-md max-w-[1600px] mx-auto">
-      <div className="flex items-start justify-between gap-4 flex-wrap opacity-0 animate-fade-slide-up" style={{ animationFillMode: 'forwards' }}>
-        <div>
-          <p className="font-data-mono text-data-mono text-on-surface-muted">KASUS INVESTIGASI</p>
-          <h1 className="font-display-lg text-display-lg text-on-surface mt-1">Investigasi</h1>
-          <p className="font-body-md text-sm text-on-surface-variant mt-2">
-            {investigations.length} kasus tercatat · {investigations.filter((i) => i.status === 'active').length} aktif
-          </p>
-        </div>
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="w-4 h-4" /> KASUS BARU
-        </Button>
-      </div>
+    <div className="p-gutter-md space-y-gutter-md max-w-[1600px] mx-auto noise-overlay">
+      <PageHeader
+        label="KASUS INVESTIGASI"
+        title="Investigasi"
+        icon={Search}
+        description={`${investigations.length} kasus tercatat · ${investigations.filter((i) => i.status === 'active').length} aktif`}
+        actions={<Button onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4" /> KASUS BARU</Button>}
+      />
 
-      <Card className="opacity-0 animate-fade-slide-up stagger-1">
+      <TacticalCard className="opacity-0 animate-fade-slide-up stagger-1">
         <CardContent className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <SearchIcon className="w-4 h-4 text-on-surface-muted absolute left-3 top-1/2 -translate-y-1/2" />
@@ -62,23 +60,23 @@ export default function InvestigationsPage() {
             </SelectContent>
           </Select>
         </CardContent>
-      </Card>
+      </TacticalCard>
 
       {isLoading ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-gutter-md">
-          {Array.from({ length: 4 }).map((_, i) => <Card key={i} className="h-40 animate-pulse" />)}
+          {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} className="h-40" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <Card><EmptyState icon={Search} title="Tidak ada kasus" description="Coba ubah filter atau buat kasus baru." action={<Button onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4" /> Kasus Baru</Button>} /></Card>
+        <TacticalCard><EmptyState icon={Search} title="Tidak ada kasus" description="Coba ubah filter atau buat kasus baru." action={<Button onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4" /> Kasus Baru</Button>} /></TacticalCard>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-gutter-md">
           {filtered.map((inv, i) => {
             const org = orgs.find((o) => o.id === inv.organization_id);
             const meta = INVESTIGATION_STATUS_META[inv.status];
             return (
-              <Card
+              <TacticalCard
                 key={inv.id}
-                className="opacity-0 animate-fade-slide-up group cursor-pointer hover:border-primary/40 transition-smooth"
+                className="opacity-0 animate-fade-slide-up group cursor-pointer hover:border-primary/40 transition-smooth h-full"
                 style={{ animationDelay: `${0.05 + i * 0.04}s`, animationFillMode: 'forwards' }}
                 onClick={() => setSelected(inv)}
               >
@@ -99,7 +97,7 @@ export default function InvestigationsPage() {
                   </div>
                   <span className="font-data-mono text-data-mono text-on-surface-muted">{formatRelativeTime(inv.updated_at)}</span>
                 </CardContent>
-              </Card>
+              </TacticalCard>
             );
           })}
         </div>

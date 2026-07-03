@@ -1,7 +1,10 @@
 'use client';
 
 import { useOrganizations, useInvestigations, useOperations, useActivity, useMarkers } from '@/lib/queries';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { TacticalCard } from '@/components/ui/tactical-card';
+import { PageHeader } from '@/components/ui/page-header';
+import { SkeletonCard } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ThreatBadge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/misc';
@@ -105,7 +108,7 @@ export default function DashboardPage() {
   }, [threatDistribution, stats.total]);
 
   return (
-    <div className="p-gutter-md space-y-gutter-md max-w-[1600px] mx-auto">
+    <div className="p-gutter-md space-y-gutter-md max-w-[1600px] mx-auto noise-overlay">
       <div className="opacity-0 animate-fade-slide-up flex items-center justify-between flex-wrap gap-2" style={{ animationFillMode: 'forwards' }}>
         <div className="flex items-center gap-3">
           <StatusDot color="var(--color-threat-critical)" size={8} />
@@ -120,18 +123,12 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="opacity-0 animate-fade-slide-up stagger-1" style={{ animationFillMode: 'forwards' }}>
-        <p className="font-data-mono text-data-mono text-on-surface-muted">RINGKASAN OPERASIONAL</p>
-        <div className="flex items-baseline gap-4 mt-1 flex-wrap">
-          <h1 className="font-display-lg text-display-lg text-on-surface tracking-tight">Dasbor Komando</h1>
-          <span className="font-data-mono text-data-mono text-on-surface-muted">
-            {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
-          </span>
-        </div>
-        <p className="font-body-md text-sm text-on-surface-variant mt-2 max-w-2xl">
-          Pantauan real-time ancaman organisasi kriminal di seluruh San Andreas. {stats.critical} organisasi tingkat kritis aktif dipantau.
-        </p>
-      </div>
+      <PageHeader
+        label="RINGKASAN OPERASIONAL"
+        title="Dasbor Komando"
+        icon={Shield}
+        description={`Pantauan real-time ancaman organisasi kriminal di seluruh San Andreas. ${stats.critical} organisasi tingkat kritis aktif dipantau.`}
+      />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-gutter-md">
         <StatTile
@@ -175,7 +172,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter-md">
-        <Card className="lg:col-span-1 opacity-0 animate-fade-slide-up stagger-5 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
+        <TacticalCard className="lg:col-span-1 opacity-0 animate-fade-slide-up stagger-5 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
           <CornerBrackets size={10} className="opacity-40" />
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -205,9 +202,9 @@ export default function DashboardPage() {
               })}
             </div>
           </CardContent>
-        </Card>
+        </TacticalCard>
 
-        <Card className="lg:col-span-2 opacity-0 animate-fade-slide-up stagger-6 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
+        <TacticalCard className="lg:col-span-2 opacity-0 animate-fade-slide-up stagger-6 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
           <CornerBrackets size={10} className="opacity-40" />
           <CardHeader className="flex-row items-center justify-between">
             <div>
@@ -263,11 +260,11 @@ export default function DashboardPage() {
               })
             )}
           </CardContent>
-        </Card>
+        </TacticalCard>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter-md">
-        <Card className="opacity-0 animate-fade-slide-up stagger-7 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
+        <TacticalCard className="opacity-0 animate-fade-slide-up stagger-7 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
           <CornerBrackets size={10} className="opacity-40" />
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -299,9 +296,9 @@ export default function DashboardPage() {
               ))
             )}
           </CardContent>
-        </Card>
+        </TacticalCard>
 
-        <Card className="lg:col-span-2 opacity-0 animate-fade-slide-up stagger-8 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
+        <TacticalCard className="lg:col-span-2 opacity-0 animate-fade-slide-up stagger-8 relative overflow-hidden h-full" style={{ animationFillMode: 'forwards' }}>
           <CornerBrackets size={10} className="opacity-40" />
           <CardHeader className="flex-row items-center justify-between">
             <div>
@@ -345,7 +342,7 @@ export default function DashboardPage() {
               </div>
             )}
           </CardContent>
-        </Card>
+        </TacticalCard>
       </div>
 
       <div className="opacity-0 animate-fade-slide-up stagger-8 grid grid-cols-2 md:grid-cols-4 gap-gutter-md" style={{ animationFillMode: 'forwards' }}>

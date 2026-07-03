@@ -4,7 +4,11 @@ import { useState, useMemo } from 'react';
 import { Radio, Users, Search, Medal, MapPin, AlertTriangle, LogIn, Activity as ActivityIcon, Filter } from 'lucide-react';
 import { useActivity } from '@/lib/queries';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { TacticalCard } from '@/components/ui/tactical-card';
+import { PageHeader } from '@/components/ui/page-header';
+import { SkeletonCard } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { EmptyState } from '@/components/ui/misc';
 import { formatRelativeTime, formatDateTime } from '@/lib/utils';
 import type { ActivityType } from '@/lib/types';
@@ -26,10 +30,15 @@ const TYPE_META: Record<ActivityType, { icon: LucideIcon; color: string; label: 
 export default function ActivityPage() {
   const { data: activity = [], isLoading } = useActivity(200);
   const [typeFilter, setTypeFilter] = useState<ActivityType | 'all'>('all');
+  const [search, setSearch] = useState('');
 
   const filtered = useMemo(() => {
-    return activity.filter((a) => typeFilter === 'all' || a.type === typeFilter);
-  }, [activity, typeFilter]);
+    return activity.filter((a) => {
+      if (typeFilter !== 'all' && a.type !== typeFilter) return false;
+      if (search && !a.message.toLowerCase().includes(search.toLowerCase()) && !a.actor.toLowerCase().includes(search.toLowerCase())) return false;
+      return true;
+    });
+  }, [activity, typeFilter, search]);
 
   const grouped = useMemo(() => {
     const groups: Record<string, typeof filtered> = {};
@@ -43,29 +52,38 @@ export default function ActivityPage() {
 
   return (
     <div className="p-gutter-md space-y-gutter-md max-w-[1200px] mx-auto">
-      <div className="flex items-start justify-between gap-4 flex-wrap opacity-0 animate-fade-slide-up" style={{ animationFillMode: 'forwards' }}>
-        <div>
-          <p className="font-data-mono text-data-mono text-on-surface-muted">LOG OPERASIONAL</p>
-          <h1 className="font-display-lg text-display-lg text-on-surface mt-1">Umpan Aktivitas</h1>
-          <p className="font-body-md text-sm text-on-surface-variant mt-2">
-            {activity.length} peristiwa tercatat · Audit trail lengkap portal
-          </p>
-        </div>
-        <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as ActivityType | 'all')}>
-          <SelectTrigger className="w-56"><Filter className="w-3 h-3 mr-2" /><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Semua Tipe</SelectItem>
-            {Object.entries(TYPE_META).map(([k, v]) => (
-              <SelectItem key={k} value={k}>{v.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <PageHeader
+        label="LOG OPERASIONAL"
+        title="Umpan Aktivitas"
+        icon={Radio}
+        description={`${activity.length} peristiwa tercatat · Audit trail lengkap portal`}
+        actions={
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search className="w-4 h-4 text-on-surface-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <Input placeholder="Cari pesan/aktor..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 w-56 h-9 text-xs" />
+            </div>
+            <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as ActivityType | 'all')}>
+              <SelectTrigger className="w-48"><Filter className="w-3 h-3 mr-2" /><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Tipe</SelectItem>
+                {Object.entries(TYPE_META).map(([k, v]) => (
+                  <SelectItem key={k} value={k}>{v.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        }
+      />
 
       {isLoading ? (
-        <Card className="animate-pulse h-96" />
+        <div className="space-y-3">
+          <SkeletonCard className="h-16" />
+          <SkeletonCard className="h-16" />
+          <SkeletonCard className="h-16" />
+        </div>
       ) : filtered.length === 0 ? (
-        <Card><EmptyState icon={Radio} title="Belum ada aktivitas" description="Aktivitas akan muncul saat operasi dilakukan." /></Card>
+        <TacticalCard><EmptyState icon={Radio} title="Belum ada aktivitas" description="Aktivitas akan muncul saat operasi dilakukan." /></TacticalCard>
       ) : (
         <div className="space-y-gutter-md">
           {Object.entries(grouped).map(([day, events], gi) => (
@@ -76,7 +94,7 @@ export default function ActivityPage() {
                 <div className="flex-1 h-px bg-border-steel/60" />
                 <span className="font-data-mono text-data-mono text-on-surface-muted">{events.length}</span>
               </div>
-              <Card>
+              <TacticalCard>
                 <CardContent className="space-y-1 -m-2">
                   {events.map((a, i) => {
                     const meta = TYPE_META[a.type];
@@ -112,7 +130,7 @@ export default function ActivityPage() {
                     );
                   })}
                 </CardContent>
-              </Card>
+              </TacticalCard>
             </div>
           ))}
         </div>

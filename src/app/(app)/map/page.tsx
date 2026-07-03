@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { CornerBrackets } from '@/components/tactical';
 
 const IntelligenceMap = dynamic(() => import('./intelligence-map').then((m) => m.IntelligenceMap), {
   ssr: false,
@@ -16,8 +17,11 @@ const IntelligenceMap = dynamic(() => import('./intelligence-map').then((m) => m
 
 export default function MapPage() {
   return (
-    <div className="h-[calc(100vh-80px)] relative">
-      <IntelligenceMap />
+    <div className="h-[calc(100vh-64px)] relative noise-overlay p-4">
+      <CornerBrackets size={16} className="opacity-40 z-20" />
+      <div className="relative h-full overflow-hidden rounded-lg border border-border-steel/40">
+        <IntelligenceMap />
+      </div>
     </div>
   );
 }

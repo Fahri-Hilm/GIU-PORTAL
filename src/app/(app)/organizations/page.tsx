@@ -21,6 +21,9 @@ import {
 } from 'lucide-react';
 import { useOrganizations, useCreateOrganization, useUpdateOrganization, useDeleteOrganization, useMissions, useCreateMission, useDeleteMission, useTerritories, useDeleteTerritory, useUploadLogo } from '@/lib/queries';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TacticalCard } from '@/components/ui/tactical-card';
+import { PageHeader } from '@/components/ui/page-header';
+import { SkeletonCard } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea, Label } from '@/components/ui/form';
 import { Badge, ThreatBadge } from '@/components/ui/badge';
@@ -68,21 +71,16 @@ function OrganizationsContent() {
   const selected = orgs.find((o) => o.id === selectedId) ?? null;
 
   return (
-    <div className="p-gutter-md space-y-gutter-md max-w-[1600px] mx-auto">
-      <div className="flex items-start justify-between gap-4 flex-wrap opacity-0 animate-fade-slide-up" style={{ animationFillMode: 'forwards' }}>
-        <div>
-          <p className="font-data-mono text-data-mono text-on-surface-muted">DATABASE ORGANISASI</p>
-          <h1 className="font-display-lg text-display-lg text-on-surface mt-1">Organisasi CRM</h1>
-          <p className="font-body-md text-sm text-on-surface-variant mt-2">
-            {orgs.length} organisasi terdaftar · Kelola profil, ancaman, misi, dan wilayah.
-          </p>
-        </div>
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="w-4 h-4" /> ORGANISASI BARU
-        </Button>
-      </div>
+    <div className="p-gutter-md space-y-gutter-md max-w-[1600px] mx-auto noise-overlay">
+      <PageHeader
+        label="DATABASE ORGANISASI"
+        title="Organisasi CRM"
+        icon={Users}
+        description={`${orgs.length} organisasi terdaftar · Kelola profil, ancaman, misi, dan wilayah.`}
+        actions={<Button onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4" /> ORGANISASI BARU</Button>}
+      />
 
-      <Card className="opacity-0 animate-fade-slide-up stagger-1">
+      <TacticalCard className="opacity-0 animate-fade-slide-up stagger-1">
         <CardContent className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <SearchIcon className="w-4 h-4 text-on-surface-muted absolute left-3 top-1/2 -translate-y-1/2" />
@@ -108,28 +106,28 @@ function OrganizationsContent() {
             </SelectContent>
           </Select>
         </CardContent>
-      </Card>
+      </TacticalCard>
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter-md">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="h-44 animate-pulse">
+            <SkeletonCard key={i} className="h-44">
               <CardContent className="opacity-30">
                 <div className="h-4 w-24 bg-on-surface-muted rounded mb-3" />
                 <div className="h-8 w-32 bg-on-surface-muted rounded" />
               </CardContent>
-            </Card>
+            </SkeletonCard>
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <Card>
+        <TacticalCard>
           <EmptyState
             icon={Building2}
             title="Tidak ada organisasi"
             description={search || threatFilter !== 'all' ? 'Coba ubah filter pencarian.' : 'Mulai dengan menambahkan organisasi pertama.'}
             action={!search && threatFilter === 'all' && <Button onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4" /> Tambah Organisasi</Button>}
           />
-        </Card>
+        </TacticalCard>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter-md">
           {filtered.map((org, i) => (
@@ -157,7 +155,7 @@ function OrganizationsContent() {
 function OrgCard({ org, index, onOpen }: { org: Organization; index: number; onOpen: () => void }) {
   const meta = THREAT_META[org.threat_level];
   return (
-    <Card
+    <TacticalCard
       className="opacity-0 animate-fade-slide-up group cursor-pointer hover:border-primary/40 transition-smooth relative overflow-hidden"
       style={{ animationDelay: `${0.05 + index * 0.04}s`, animationFillMode: 'forwards' }}
       onClick={onOpen}
@@ -201,7 +199,7 @@ function OrgCard({ org, index, onOpen }: { org: Organization; index: number; onO
           </span>
         </div>
       </CardContent>
-    </Card>
+    </TacticalCard>
   );
 }
 

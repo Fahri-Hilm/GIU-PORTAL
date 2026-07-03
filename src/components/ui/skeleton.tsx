@@ -5,7 +5,7 @@ export function Skeleton({ className, style }: { className?: string; style?: Rea
   return <div className={cn('animate-pulse rounded-md bg-surface-elevated/40', className)} style={style} />;
 }
 
-export function SkeletonCard({ className, style }: { className?: string; style?: React.CSSProperties }) {
+export function SkeletonCard({ className, style, children }: { className?: string; style?: React.CSSProperties; children?: React.ReactNode }) {
   return (
     <div
       className={cn(
@@ -13,7 +13,9 @@ export function SkeletonCard({ className, style }: { className?: string; style?:
         className,
       )}
       style={style}
-    />
+    >
+      {children}
+    </div>
   );
 }
 

@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Plus, Medal, Target, Crosshair, User, Save, Clock, Users as UsersIcon } from 'lucide-react';
+import { Plus, Medal, Target, Crosshair, User, Save, Clock, Users as UsersIcon, Search as SearchIcon } from 'lucide-react';
 import { useOperations, useCreateOperation, useUpdateOperation, useOrganizations } from '@/lib/queries';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TacticalCard } from '@/components/ui/tactical-card';
+import { PageHeader } from '@/components/ui/page-header';
+import { SkeletonCard } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea, Label } from '@/components/ui/form';
 import { Badge } from '@/components/ui/badge';
@@ -20,30 +23,34 @@ export default function OperationsPage() {
   const { data: orgs = [] } = useOrganizations();
   const [createOpen, setCreateOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<OperationStatus | 'all'>('all');
+  const [search, setSearch] = useState('');
 
   const filtered = useMemo(() => {
-    return operations.filter((o) => statusFilter === 'all' || o.status === statusFilter);
-  }, [operations, statusFilter]);
+    return operations.filter((o) => {
+      if (statusFilter !== 'all' && o.status !== statusFilter) return false;
+      if (search && !o.codename.toLowerCase().includes(search.toLowerCase()) && !o.objective.toLowerCase().includes(search.toLowerCase())) return false;
+      return true;
+    });
+  }, [operations, statusFilter, search]);
 
   return (
-    <div className="p-gutter-md space-y-gutter-md max-w-[1600px] mx-auto">
-      <div className="flex items-start justify-between gap-4 flex-wrap opacity-0 animate-fade-slide-up" style={{ animationFillMode: 'forwards' }}>
-        <div>
-          <p className="font-data-mono text-data-mono text-on-surface-muted">OPERASI LAPANGAN</p>
-          <h1 className="font-display-lg text-display-lg text-on-surface mt-1">Operasi</h1>
-          <p className="font-body-md text-sm text-on-surface-variant mt-2">
-            {operations.length} operasi · {operations.filter((o) => o.status === 'active').length} berlangsung
-          </p>
-        </div>
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="w-4 h-4" /> OPERASI BARU
-        </Button>
-      </div>
+    <div className="p-gutter-md space-y-gutter-md max-w-[1600px] mx-auto noise-overlay">
+      <PageHeader
+        label="OPERASI LAPANGAN"
+        title="Operasi"
+        icon={Medal}
+        description={`${operations.length} operasi · ${operations.filter((o) => o.status === 'active').length} berlangsung`}
+        actions={<Button onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4" /> OPERASI BARU</Button>}
+      />
 
-      <Card className="opacity-0 animate-fade-slide-up stagger-1">
-        <CardContent>
+      <TacticalCard className="opacity-0 animate-fade-slide-up stagger-1">
+        <CardContent className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[240px]">
+            <SearchIcon className="w-4 h-4 text-on-surface-muted absolute left-3 top-1/2 -translate-y-1/2" />
+            <Input placeholder="Cari kodename / objektif..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+          </div>
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as OperationStatus | 'all')}>
-            <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Semua Status</SelectItem>
               {OPERATION_STATUS.map((s) => (
@@ -52,14 +59,14 @@ export default function OperationsPage() {
             </SelectContent>
           </Select>
         </CardContent>
-      </Card>
+      </TacticalCard>
 
       {isLoading ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-gutter-md">
-          {Array.from({ length: 4 }).map((_, i) => <Card key={i} className="h-40 animate-pulse" />)}
+          {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} className="h-40" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <Card><EmptyState icon={Medal} title="Tidak ada operasi" description="Mulai rencanakan operasi baru." action={<Button onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4" /> Operasi Baru</Button>} /></Card>
+        <TacticalCard><EmptyState icon={Medal} title="Tidak ada operasi" description="Mulai rencanakan operasi baru." action={<Button onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4" /> Operasi Baru</Button>} /></TacticalCard>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-gutter-md">
           {filtered.map((op, i) => (
@@ -87,7 +94,7 @@ function OperationCard({ operation, index }: { operation: Operation; index: numb
   };
 
   return (
-    <Card className="opacity-0 animate-fade-slide-up group" style={{ animationDelay: `${0.05 + index * 0.04}s`, animationFillMode: 'forwards' }}>
+    <TacticalCard className="opacity-0 animate-fade-slide-up group" style={{ animationDelay: `${0.05 + index * 0.04}s`, animationFillMode: 'forwards' }}>
       <CardHeader>
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -137,7 +144,7 @@ function OperationCard({ operation, index }: { operation: Operation; index: numb
           </p>
         )}
       </CardContent>
-    </Card>
+    </TacticalCard>
   );
 }
 

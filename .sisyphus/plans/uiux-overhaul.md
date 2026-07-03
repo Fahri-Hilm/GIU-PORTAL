@@ -195,7 +195,7 @@ Max Concurrent: 8 (Wave 2)
 
 ## TODOs
 
-- [ ] 1. Font System Replacement
+- [x] 1. Font System Replacement
 
   **What to do**:
   - Replace `Inter` import with `Chakra Petch` in globals.css Google Fonts import
@@ -253,7 +253,7 @@ Max Concurrent: 8 (Wave 2)
   **Commit**: YES (groups with Wave 1)
   - Message: `feat(ui): font system - Chakra Petch display + IBM Plex Sans body`
 
-- [ ] 2. PageHeader Component
+- [x] 2. PageHeader Component
 
   **What to do**:
   - Create `src/components/ui/page-header.tsx`
@@ -309,7 +309,7 @@ Max Concurrent: 8 (Wave 2)
   **Commit**: YES (groups with Wave 1)
   - Message: `feat(ui): add reusable PageHeader component`
 
-- [ ] 3. SkeletonLoader Component
+- [x] 3. SkeletonLoader Component
 
   **What to do**:
   - Create `src/components/ui/skeleton.tsx`
@@ -354,7 +354,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 1)
 
-- [ ] 4. TacticalCard Wrapper
+- [x] 4. TacticalCard Wrapper
 
   **What to do**:
   - Create `src/components/ui/tactical-card.tsx`
@@ -399,7 +399,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 1)
 
-- [ ] 5. Sidebar Polish
+- [x] 5. Sidebar Polish
 
   **What to do**:
   - Active indicator: replace `border-r-2 border-primary` with left accent bar (w-1 h-full bg-primary) + subtle glow (`box-shadow: 0 0 15px color-mix(...)`)
@@ -456,7 +456,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 1)
 
-- [ ] 6. Topbar Polish
+- [x] 6. Topbar Polish
 
   **What to do**:
   - Add keyboard shortcut hint to search input: append `<kbd>` element showing "/" with styling (font-data-mono text-[10px] bg-surface-elevated border rounded px-1.5 py-0.5)

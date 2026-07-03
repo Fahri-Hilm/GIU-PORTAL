@@ -17,6 +17,9 @@ import {
 } from 'lucide-react';
 import { useMarkers, useOrganizations, useCreateMarker, useUpdateMarker, useDeleteMarker, useUploadMarkerIcon } from '@/lib/queries';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TacticalCard } from '@/components/ui/tactical-card';
+import { PageHeader } from '@/components/ui/page-header';
+import { SkeletonCard } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Input, Textarea, Label } from '@/components/ui/form';
 import { Badge, ThreatBadge } from '@/components/ui/badge';
@@ -60,25 +63,24 @@ export default function MarkersPage() {
 
   return (
     <div className="p-gutter-md space-y-gutter-md max-w-[1600px] mx-auto">
-      <div className="flex items-start justify-between gap-4 flex-wrap opacity-0 animate-fade-slide-up" style={{ animationFillMode: 'forwards' }}>
-        <div>
-          <p className="font-data-mono text-data-mono text-on-surface-muted">DATABASE PENANDA</p>
-          <h1 className="font-display-lg text-display-lg text-on-surface mt-1">Penanda Intelijen</h1>
-          <p className="font-body-md text-sm text-on-surface-variant mt-2">
-            {markers.length} penanda terdaftar · {markers.filter((m) => m.icon_url).length} pakai ikon kustom
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link href="/map">
-            <Button variant="outline"><MapPin className="w-4 h-4" /> BUKA PETA</Button>
-          </Link>
-          <Button onClick={() => setCreateOpen(true)}>
-            <Plus className="w-4 h-4" /> PENANDA BARU
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        label="DATABASE PENANDA"
+        title="Penanda Intelijen"
+        icon={MapPin}
+        description={`${markers.length} penanda terdaftar · ${markers.filter((m) => m.icon_url).length} pakai ikon kustom`}
+        actions={
+          <>
+            <Link href="/map">
+              <Button variant="outline"><MapPin className="w-4 h-4" /> BUKA PETA</Button>
+            </Link>
+            <Button onClick={() => setCreateOpen(true)}>
+              <Plus className="w-4 h-4" /> PENANDA BARU
+            </Button>
+          </>
+        }
+      />
 
-      <Card className="opacity-0 animate-fade-slide-up stagger-1">
+      <TacticalCard className="opacity-0 animate-fade-slide-up stagger-1">
         <CardContent className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <SearchIcon className="w-4 h-4 text-on-surface-muted absolute left-3 top-1/2 -translate-y-1/2" />
@@ -103,30 +105,31 @@ export default function MarkersPage() {
             </SelectContent>
           </Select>
         </CardContent>
-      </Card>
+      </TacticalCard>
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter-md">
-          {Array.from({ length: 6 }).map((_, i) => <Card key={i} className="h-36 animate-pulse" />)}
+          {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} className="h-36" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <Card>
+        <TacticalCard>
           <EmptyState
             icon={MapPin}
             title="Tidak ada penanda"
             description={search || typeFilter !== 'all' || threatFilter !== 'all' ? 'Coba ubah filter.' : 'Tambahkan penanda pertama di peta atau di sini.'}
             action={<Button onClick={() => setCreateOpen(true)}><Plus className="w-4 h-4" /> Tambah Penanda</Button>}
           />
-        </Card>
+        </TacticalCard>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter-md">
           {filtered.map((m, i) => {
             const org = orgs.find((o) => o.id === m.organization_id);
             const meta = THREAT_META[m.threat_level];
             return (
-              <Card
+              <TacticalCard
                 key={m.id}
-                className="opacity-0 animate-fade-slide-up group cursor-pointer hover:border-primary/40 transition-smooth relative overflow-hidden"
+                accent={meta.color}
+                className="opacity-0 animate-fade-slide-up group cursor-pointer hover:border-primary/40 transition-smooth relative overflow-hidden h-full"
                 style={{ animationDelay: `${0.05 + i * 0.03}s`, animationFillMode: 'forwards' }}
                 onClick={() => setSelectedId(m.id)}
               >
@@ -172,7 +175,7 @@ export default function MarkersPage() {
                     </span>
                   </div>
                 </CardContent>
-              </Card>
+              </TacticalCard>
             );
           })}
         </div>
