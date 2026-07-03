@@ -148,7 +148,7 @@ export function UploadPortraitDialog({ profile, open, onOpenChange }: UploadPort
         </div>
 
         <p className="font-data-mono text-[10px] text-on-surface-muted text-center">
-          Format: WebP, PNG, JPEG | Max: 5MB | Recommended: 1024×768 (4:3)
+          Format: WebP, PNG, JPEG | Max: 5MB | Recommended: 768×1024 (3:4 portrait)
         </p>
 
         <DialogFooter className="gap-2">
