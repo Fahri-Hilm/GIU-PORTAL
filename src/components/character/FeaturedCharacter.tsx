@@ -237,7 +237,7 @@ export function FeaturedCharacter({ profile, className }: FeaturedCharacterProps
                 exit={{ opacity: 0, scale: 0.8, y: -40, filter: 'blur(10px)' }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
-                <CharacterPortrait profile={profile} size="xl" animate />
+                <CharacterPortrait profile={profile} size="lg" animate />
               </motion.div>
             </AnimatePresence>
 
