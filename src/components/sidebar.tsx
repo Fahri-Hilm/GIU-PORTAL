@@ -25,11 +25,19 @@ export function Sidebar() {
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
   const collapse = useUIStore((s) => s.sidebarCollapsed);
+  const mobileSidebarOpen = useUIStore((s) => s.mobileSidebarOpen);
+  const setMobileSidebar = useUIStore((s) => s.setMobileSidebar);
 
   const handleSignOut = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
     await signOut();
     window.location.href = '/login';
+  };
+
+  const handleNavClick = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setMobileSidebar(false);
+    }
   };
 
   let sectionIndex = 0;
@@ -38,8 +46,10 @@ export function Sidebar() {
   return (
     <nav
       className={cn(
-        'fixed left-0 top-0 h-full z-40 flex flex-col pt-5 pb-6 bg-surface-graphite/85 backdrop-blur-xl border-r border-border-steel/50 transition-all duration-300',
+        'fixed left-0 top-0 h-full z-40 flex flex-col pt-5 pb-6 bg-surface-graphite/95 backdrop-blur-xl border-r border-border-steel/50 transition-all duration-300',
         collapse ? 'w-[72px]' : 'w-[280px]',
+        'md:translate-x-0',
+        mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
       )}
     >
       <div className={cn('px-margin-edge mb-6 flex items-center gap-3', collapse && 'justify-center')}>
@@ -88,6 +98,7 @@ export function Sidebar() {
               >
                 <Link
                   href={item.href}
+                  onClick={handleNavClick}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-smooth relative overflow-hidden',
                     collapse && 'justify-center',

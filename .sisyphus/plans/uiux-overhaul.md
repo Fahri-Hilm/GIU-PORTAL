@@ -511,7 +511,7 @@ Max Concurrent: 8 (Wave 2)
 
 ### Wave 2: Apply Foundation to Pages
 
-- [ ] 7. Dashboard Hero + Tactical Atmosphere
+- [x] 7. Dashboard Hero + Tactical Atmosphere
 
   **What to do**:
   - Replace inline header with `<PageHeader>` component (T2)
@@ -564,7 +564,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 2)
 
-- [ ] 8. Organizations — Master-Detail Layout
+- [x] 8. Organizations — Master-Detail Layout
 
   **What to do**:
   - Replace inline header with `<PageHeader>`
@@ -613,7 +613,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 2)
 
-- [ ] 9. Investigations — Master-Detail Layout
+- [x] 9. Investigations — Master-Detail Layout
 
   **What to do**:
   - Same as T8: PageHeader + master-detail + TacticalCard + skeletons + noise/grid
@@ -651,7 +651,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 2)
 
-- [ ] 10. Operations — Master-Detail + Search
+- [x] 10. Operations — Master-Detail + Search
 
   **What to do**:
   - Same as T8/T9: PageHeader + master-detail + TacticalCard + skeletons
@@ -691,7 +691,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 2)
 
-- [ ] 11. Activity — Tactical + Search
+- [x] 11. Activity — Tactical + Search
 
   **What to do**:
   - Replace inline header with `<PageHeader>`
@@ -731,7 +731,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 2)
 
-- [ ] 12. Settings — Tactical Polish
+- [x] 12. Settings — Tactical Polish
 
   **What to do**:
   - Replace inline header with `<PageHeader>`
@@ -770,7 +770,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 2)
 
-- [ ] 13. Map Page — Tactical Header
+- [x] 13. Map Page — Tactical Header
 
   **What to do**:
   - Replace inline header with `<PageHeader>`
@@ -809,7 +809,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 2)
 
-- [ ] 14. Markers Page — Tactical Polish
+- [x] 14. Markers Page — Tactical Polish
 
   **What to do**:
   - Replace inline header with `<PageHeader>`
