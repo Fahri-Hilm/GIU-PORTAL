@@ -50,7 +50,7 @@ export function CharacterPortrait({ profile, size = 'md', className, animate = t
         fill
         sizes={sizes}
         className={cn(
-          'object-cover rounded-lg transition-all duration-700',
+          'object-contain rounded-lg transition-all duration-700',
           loaded ? 'opacity-100 scale-100' : 'opacity-0 scale-110',
         )}
         style={{
