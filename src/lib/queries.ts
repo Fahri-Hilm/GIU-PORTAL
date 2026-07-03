@@ -259,3 +259,11 @@ export function useDeleteProfile() {
     onSuccess: () => qc.invalidateQueries({ queryKey: profilesKeys.list }),
   });
 }
+
+export function useUpdateProfile() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, ...input }: { id: string } & Parameters<typeof data.updateProfile>[1]) => data.updateProfile(id, input),
+    onSuccess: () => qc.invalidateQueries({ queryKey: profilesKeys.list }),
+  });
+}

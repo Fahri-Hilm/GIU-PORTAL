@@ -592,6 +592,27 @@ export const data = {
     }
     throw new Error('Mode mock tidak mendukung penghapusan anggota');
   },
+
+  async updateProfile(id: string, input: {
+    full_name?: string;
+    codename?: string | null;
+    rank?: string;
+    role?: Profile['role'];
+  }): Promise<void> {
+    if (isSupabaseConfigured) {
+      const res = await fetch(`/api/profiles/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? 'Gagal memperbarui anggota');
+      }
+      return;
+    }
+    throw new Error('Mode mock tidak mendukung pembaruan anggota');
+  },
 };
 
 export async function mockSignIn(email: string, _password: string): Promise<Profile> {

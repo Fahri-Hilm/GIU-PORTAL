@@ -849,7 +849,7 @@ Max Concurrent: 8 (Wave 2)
 
 ### Wave 3: Mobile + Polish
 
-- [ ] 15. Mobile Sidebar Drawer
+- [x] 15. Mobile Sidebar Drawer
 
   **What to do**:
   - Add mobile breakpoint detection (use existing useUIStore or add isMobile state)
@@ -901,7 +901,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 3)
 
-- [ ] 16. Mobile Topbar Search
+- [x] 16. Mobile Topbar Search
 
   **What to do**:
   - On mobile: replace hidden search input with search icon button
@@ -941,7 +941,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 3)
 
-- [ ] 17. Max-Width Standardization
+- [x] 17. Max-Width Standardization
 
   **What to do**:
   - Data-heavy pages (dashboard, organizations, investigations, operations, markers): `max-w-[1600px]`
@@ -980,7 +980,7 @@ Max Concurrent: 8 (Wave 2)
 
   **Commit**: YES (groups with Wave 3)
 
-- [ ] 18. Filter Consistency Pass
+- [x] 18. Filter Consistency Pass
 
   **What to do**:
   - Verify all list pages have search + filter:

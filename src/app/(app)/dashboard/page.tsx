@@ -5,6 +5,7 @@ import { CardContent, CardHeader, CardTitle, CardDescription } from '@/component
 import { TacticalCard } from '@/components/ui/tactical-card';
 import { PageHeader } from '@/components/ui/page-header';
 import { SkeletonCard } from '@/components/ui/skeleton';
+import { MemberManager } from '@/components/member-manager';
 import { Button } from '@/components/ui/button';
 import { ThreatBadge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/misc';
@@ -344,6 +345,8 @@ export default function DashboardPage() {
           </CardContent>
         </TacticalCard>
       </div>
+
+      <MemberManager />
 
       <div className="opacity-0 animate-fade-slide-up stagger-8 grid grid-cols-2 md:grid-cols-4 gap-gutter-md" style={{ animationFillMode: 'forwards' }}>
         <QuickAction href="/map" icon={MapPin} label="Buka Peta" accent="primary" />
