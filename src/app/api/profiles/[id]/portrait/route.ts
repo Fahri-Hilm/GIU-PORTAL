@@ -12,8 +12,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data: profile } = await sb.from('profiles').select('role').eq('id', id).single();
-  if (!profile || profile.role !== 'admin') {
+  const { data: currentUser } = await sb.from('profiles').select('role').eq('id', user.id).single();
+  if (!currentUser || currentUser.role !== 'admin') {
     return NextResponse.json({ error: 'Forbidden: admin only' }, { status: 403 });
   }
 
@@ -66,13 +66,14 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data: profile } = await sb.from('profiles').select('role, portrait_url').eq('id', id).single();
-  if (!profile || profile.role !== 'admin') {
+  const { data: currentUser } = await sb.from('profiles').select('role').eq('id', user.id).single();
+  if (!currentUser || currentUser.role !== 'admin') {
     return NextResponse.json({ error: 'Forbidden: admin only' }, { status: 403 });
   }
 
-  if (profile.portrait_url) {
-    const oldPath = profile.portrait_url.split('/').pop();
+  const { data: targetProfile } = await sb.from('profiles').select('portrait_url').eq('id', id).single();
+  if (targetProfile?.portrait_url) {
+    const oldPath = targetProfile.portrait_url.split('/').pop();
     if (oldPath) {
       await sb.storage.from('character-portraits').remove([oldPath]);
     }
